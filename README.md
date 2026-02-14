@@ -1,5 +1,7 @@
 # vue-new-order-group
 
+This project was completed by S.K. Gulyev, a third-year student in group 609-31, as part of his studies in the discipline “Backend Development”
+
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
