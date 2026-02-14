@@ -41,6 +41,11 @@ export default {
 <template>
   <header>
     <nav>
+      <ul>
+        <li><router-link to="/">Главная</router-link></li>
+        <li><router-link to="/regions">Регионы</router-link></li>
+        <li><router-link to="/pollingstation">Участки для голосования</router-link></li>
+      </ul>
       <div v-if="isAuthenticated && user">
         Welcome, {{ user.name }}
         <button @click="logout">Logout</button>
