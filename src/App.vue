@@ -174,20 +174,12 @@ export default {
 
 <style scoped>
 .nog-shell {
-  --nog-bg: #f3f7f4;
-  --nog-surface: #ffffff;
-  --nog-surface-soft: #f8fbf9;
-  --nog-text: #10241d;
-  --nog-text-subtle: #3f544d;
-  --nog-border: #d4e3dc;
-  --nog-accent: #174735;
-  --nog-accent-strong: #0f3024;
   min-height: 100vh;
   padding: clamp(1rem, 2vw, 2rem);
   color: var(--nog-text);
   background:
-    radial-gradient(100% 200% at 100% 0%, #e6f2ec 0%, transparent 45%),
-    linear-gradient(180deg, #f8fcfa 0%, var(--nog-bg) 100%);
+    radial-gradient(100% 200% at 100% 0%, var(--nog-bg-gradient-top) 0%, transparent 45%),
+    linear-gradient(180deg, var(--nog-bg-gradient-bottom) 0%, var(--nog-bg) 100%);
 }
 
 .nog-header {
@@ -239,7 +231,7 @@ export default {
 
 .menu-link:hover {
   color: var(--nog-accent);
-  background: #ecf4f0;
+  background: var(--nog-hover-surface);
 }
 
 .menu-link-active {
@@ -276,9 +268,9 @@ export default {
 }
 
 .menu-state-online {
-  border-color: #afc8be;
+  border-color: var(--nog-online-border);
   color: var(--nog-accent);
-  background: #edf6f2;
+  background: var(--nog-accent-soft);
 }
 
 :deep(.menu-inline-action.p-button) {

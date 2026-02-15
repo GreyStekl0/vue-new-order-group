@@ -27,7 +27,7 @@ export default {
 
     <h3>Ключевые преимущества</h3>
 
-    <ul class="feature-list">
+    <ul class="feature-list nog-list-reset">
       <li class="feature-item">
         <i class="pi pi-user feature-icon" aria-hidden="true" />
         <p class="feature-copy">
@@ -63,14 +63,14 @@ export default {
 
 .lead {
   margin-top: 1.5rem;
-  color: #3e524b;
+  color: var(--nog-text-lead);
   font-size: 1.25rem;
 }
 
 .divider {
   margin: 2rem 0;
   border: 0;
-  border-top: 3px solid #174735;
+  border-top: 3px solid var(--nog-accent);
   opacity: 0.7;
 }
 
@@ -79,12 +79,12 @@ export default {
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.4;
-  color: #174735;
+  color: var(--nog-accent);
 }
 
 .copy {
   margin-top: 0.8rem;
-  color: #455952;
+  color: var(--nog-text-copy);
   font-size: 1.1rem;
 }
 
@@ -96,9 +96,7 @@ export default {
 
 .feature-list {
   margin: 0.75rem 0 0;
-  padding-left: 0;
-  list-style: none;
-  color: #455952;
+  color: var(--nog-text-copy);
 }
 
 .feature-list li + li {
@@ -112,7 +110,7 @@ export default {
 }
 
 .feature-icon {
-  color: #174735;
+  color: var(--nog-accent);
   font-size: 1.05rem;
 }
 
@@ -123,6 +121,6 @@ export default {
 
 .feature-title {
   font-weight: 700;
-  color: #173f31;
+  color: var(--nog-text-strong);
 }
 </style>

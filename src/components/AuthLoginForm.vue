@@ -152,10 +152,10 @@ export default {
 
 <style scoped>
 .auth-form {
-  --auth-text: var(--nog-text, #10241d);
-  --auth-text-subtle: var(--nog-text-subtle, #3f544d);
-  --auth-accent: var(--nog-accent, #174735);
-  --auth-accent-strong: var(--nog-accent-strong, #0f3024);
+  --auth-text: var(--nog-text);
+  --auth-text-subtle: var(--nog-text-subtle);
+  --auth-accent: var(--nog-accent);
+  --auth-accent-strong: var(--nog-accent-strong);
 }
 
 .auth-caption {
@@ -180,19 +180,19 @@ export default {
 
 .auth-input {
   width: 100%;
-  border: 1px solid #9fb8ad;
+  border: 1px solid var(--nog-form-input-border);
   border-radius: 0.72rem;
   padding: 0.62rem 0.75rem;
   font-weight: 600;
   color: var(--auth-text);
-  background: #ffffff;
-  box-shadow: inset 0 0 0 1px #d7e5de;
+  background: var(--nog-surface);
+  box-shadow: inset 0 0 0 1px var(--nog-form-input-border-soft);
 }
 
 .auth-input:focus {
-  border-color: #7ea796;
+  border-color: var(--nog-form-input-focus);
   box-shadow:
-    inset 0 0 0 1px #7ea796,
+    inset 0 0 0 1px var(--nog-form-input-focus),
     0 0 0 0.2rem rgba(23, 71, 53, 0.15);
 }
 
@@ -219,17 +219,17 @@ export default {
 
 .password-toggle:hover {
   color: var(--auth-accent);
-  background: #edf5f1;
+  background: var(--nog-form-hover-surface);
 }
 
 .auth-field-error {
   margin-top: 0.35rem;
-  border: 1px solid #b74747;
+  border: 1px solid var(--nog-danger-border);
   border-radius: 0.6rem;
   padding: 0.35rem 0.5rem;
-  color: #8f2525;
+  color: var(--nog-danger-text);
   font-size: 0.82rem;
-  background: #f8e9e9;
+  background: var(--nog-danger-surface);
 }
 
 .auth-submit {
@@ -242,7 +242,7 @@ export default {
   border-radius: 0.72rem;
   padding: 0.7rem 0.9rem;
   border: 1px solid var(--auth-accent) !important;
-  color: #ffffff !important;
+  color: var(--nog-surface) !important;
   background: var(--auth-accent) !important;
   font-size: 0.95rem;
   font-weight: 700;

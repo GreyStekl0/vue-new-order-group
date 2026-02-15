@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Aldrich&family=Barlow:wght@400;500;600;700&display=swap');
 @import './base.css';
 @import 'tailwindcss';
+@import './common.css';
 
 :root {
   color-scheme: light;
@@ -9,8 +10,8 @@
 body {
   margin: 0;
   font-family: 'Barlow', 'Segoe UI', sans-serif;
-  background: #f3f7f4;
-  color: #10241d;
+  background: var(--nog-bg);
+  color: var(--nog-text);
 }
 
 h1,

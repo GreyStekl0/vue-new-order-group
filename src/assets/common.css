@@ -1,0 +1,120 @@
+:root {
+  --nog-bg: #f3f7f4;
+  --nog-surface: #ffffff;
+  --nog-surface-soft: #f8fbf9;
+  --nog-text: #10241d;
+  --nog-text-subtle: #3f544d;
+  --nog-text-lead: #3e524b;
+  --nog-text-copy: #455952;
+  --nog-text-copy-soft: #536760;
+  --nog-text-strong: #173f31;
+  --nog-border: #d4e3dc;
+  --nog-border-soft: #d7e3dd;
+  --nog-border-soft-strong: #d5e1db;
+  --nog-accent: #174735;
+  --nog-accent-strong: #0f3024;
+  --nog-accent-soft: #edf6f2;
+  --nog-accent-surface: #f9fcfa;
+  --nog-bg-gradient-top: #e6f2ec;
+  --nog-bg-gradient-bottom: #f8fcfa;
+  --nog-hover-surface: #ecf4f0;
+  --nog-online-border: #afc8be;
+  --nog-section-copy: #41554e;
+  --nog-empty-border: #b8ccc3;
+  --nog-empty-icon: #235c46;
+  --nog-empty-copy: #4c6159;
+  --nog-empty-meta: #5b6f67;
+  --nog-form-input-border: #9fb8ad;
+  --nog-form-input-border-soft: #d7e5de;
+  --nog-form-input-focus: #7ea796;
+  --nog-form-hover-surface: #edf5f1;
+  --nog-danger-border: #b74747;
+  --nog-danger-text: #8f2525;
+  --nog-danger-surface: #f8e9e9;
+}
+
+.nog-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.nog-section-description {
+  margin-top: 0.75rem;
+  color: var(--nog-section-copy);
+}
+
+.nog-empty-state {
+  margin-top: 1rem;
+  border: 1px dashed var(--nog-empty-border);
+  border-radius: 0.95rem;
+  padding: 1.2rem;
+  text-align: center;
+  background: var(--nog-bg-gradient-bottom);
+}
+
+.nog-empty-icon {
+  font-size: 1.6rem;
+  color: var(--nog-empty-icon);
+}
+
+.nog-empty-title {
+  margin: 0.6rem 0 0;
+  color: var(--nog-text-strong);
+  font-size: 1.1rem;
+}
+
+.nog-empty-copy {
+  margin: 0.55rem auto 0;
+  max-width: 52ch;
+  color: var(--nog-empty-copy);
+}
+
+.nog-empty-meta {
+  display: flex;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-top: 0.85rem;
+  color: var(--nog-empty-meta);
+  font-size: 0.84rem;
+}
+
+.nog-empty-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nog-list-reset {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.nog-data-card {
+  border: 1px solid var(--nog-card-border-color, var(--nog-border-soft-strong));
+  border-radius: 0.8rem;
+  background: var(--nog-card-bg, var(--nog-surface));
+  padding: var(--nog-card-padding, 0.85rem);
+}
+
+.nog-data-card-title {
+  margin: 0;
+  color: var(--nog-text-strong);
+}
+
+.nog-data-card-copy {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--nog-text-copy-soft);
+}
+
+@media (max-width: 680px) {
+  .nog-empty-meta {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+  }
+}
