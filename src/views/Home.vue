@@ -6,90 +6,123 @@ export default {
 
 <template>
   <section class="view-home">
-    <p class="view-badge"><i class="pi pi-shield" /> new order group</p>
-
-    <h2>
-      Когда штурм <span class="accent">запрещён</span>, остаётся демократия
-    </h2>
+    <h1>Не захватывайте трон. Пусть они сами вас туда посадят</h1>
 
     <p class="lead">
-      В золотые времена города брались силой, страхом и обманом. Власть доставалась самым
-      могущественным. Теперь правила изменились: выборы, комиссии, отчёты и бесконечные формальности.
-      В таких условиях нужна система, которая работает точнее и тише.
+      Времена лазерных пушек и гигантских роботов ушли в прошлое. Сегодня миром правят рейтинги,
+      бюллетени и общественное мнение. New Order Group превращает вашу жажду господства в легитимный
+      политический мандат.
     </p>
 
     <hr class="divider" />
 
-    <h3>new order group - ваше решение в эпоху процедур</h3>
+    <h2>New Order Group — ваш оператор управляемой демократии.</h2>
 
     <p class="copy">
-      new order group помогает сохранять влияние в среде, где каждый шаг требует легитимного вида и
-      дисциплины исполнения. Мы берём на себя сложные этапы подготовки, координации и контроля
-      кампаний, чтобы вы не тратили ресурсы на рутину.
+      Герои могут остановить армию клонов, но они бессильны против грамотно составленного протокола
+      избирательной комиссии. Мы предлагаем комплексные решения для современных антагонистов: от
+      дискредитации оппонентов до «корректировки» финальных протоколов. Мы не нарушаем правила — мы
+      пишем их заново под вашу диктовку.
     </p>
 
-    <p class="copy">
-      Наша модель работы учитывает риски и ограничения современного процесса принятия решений.
-      Команда выстраивает комплексный сценарий действий: от базовой подготовки до финальной фиксации
-      результата, с минимальным шумом и предсказуемым итогом.
-    </p>
+    <h3>Ключевые преимущества</h3>
 
-    <p class="copy">
-      После авторизации вы сможете посмотреть примеры завершённых кампаний и текущих операций. Даже
-      ограниченного объёма информации достаточно, чтобы оценить подход и понять, как new order group
-      масштабирует управляемый результат.
-    </p>
-
+    <ul class="feature-list">
+      <li class="feature-item">
+        <i class="pi pi-user feature-icon" aria-hidden="true" />
+        <p class="feature-copy">
+          <span class="feature-title">Адаптация имиджа:</span>
+          Превращаем «Безумного Ученого» в «Технократа-визионера».
+        </p>
+      </li>
+      <li class="feature-item">
+        <i class="pi pi-users feature-icon" aria-hidden="true" />
+        <p class="feature-copy">
+          <span class="feature-title">Работа с электоратом:</span>
+          Подкуп, запугивание и нейролингвистическое программирование в промышленных масштабах.
+        </p>
+      </li>
+      <li class="feature-item">
+        <i class="pi pi-check-circle feature-icon" aria-hidden="true" />
+        <p class="feature-copy">
+          <span class="feature-title">Гарантия результата:</span>
+          Если вы не выиграете выборы, мы устроим переворот бесплатно.
+        </p>
+      </li>
+    </ul>
   </section>
 </template>
 
 <style scoped>
-.view-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+.view-home h1 {
   margin: 0;
-  padding: 0.25rem 0.65rem;
-  border-radius: 9999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #174735;
-  background: #e7f2ec;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.view-home h2 {
-  margin: 0.85rem 0 0;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   line-height: 1.15;
-}
-
-.accent {
-  color: #174735;
+  text-wrap: balance;
 }
 
 .lead {
-  margin-top: 0.9rem;
+  margin-top: 1.5rem;
   color: #3e524b;
-  font-size: 1.03rem;
+  font-size: 1.25rem;
 }
 
 .divider {
-  margin: 1.15rem 0;
+  margin: 2rem 0;
   border: 0;
   border-top: 3px solid #174735;
   opacity: 0.7;
 }
 
-.view-home h3 {
+.view-home h2 {
   margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.25;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #174735;
 }
 
 .copy {
   margin-top: 0.8rem;
   color: #455952;
+  font-size: 1.1rem;
+}
+
+.view-home h3 {
+  margin: 1.35rem 0 0;
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+
+.feature-list {
+  margin: 0.75rem 0 0;
+  padding-left: 0;
+  list-style: none;
+  color: #455952;
+}
+
+.feature-list li + li {
+  margin-top: 1.1rem;
+}
+
+.feature-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  color: #174735;
+  font-size: 1.05rem;
+}
+
+.feature-copy {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.feature-title {
+  font-weight: 700;
+  color: #173f31;
 }
 </style>

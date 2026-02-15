@@ -95,8 +95,6 @@ export default {
     <header class="nog-header">
       <div class="nog-title">
         <p class="title-badge"><i class="pi pi-shield" /> new order group</p>
-        <h1>new order group</h1>
-        <p class="title-copy">Панель управления</p>
       </div>
 
       <Menubar :model="menuItems" class="nog-menubar">
@@ -213,23 +211,6 @@ export default {
   text-transform: uppercase;
   color: var(--nog-surface);
   background: var(--nog-accent);
-}
-
-.nog-title h1 {
-  margin: 0.7rem 0 0;
-  font-family: 'Aldrich', 'Bahnschrift', 'Segoe UI', sans-serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  line-height: 1.05;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.title-copy {
-  margin-top: 0.45rem;
-  color: var(--nog-text-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.8rem;
 }
 
 :deep(.nog-menubar.p-menubar) {
