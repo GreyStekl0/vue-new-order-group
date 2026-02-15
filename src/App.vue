@@ -1,23 +1,23 @@
 <script>
 import Menubar from 'primevue/menubar'
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
+import PrimeDialog from 'primevue/dialog'
 import PrimeButton from 'primevue/button'
 
+import AuthLoginForm from '@/components/AuthLoginForm.vue'
 import { useAuthStore } from '@/stores/authStore'
 
 export default {
   components: {
     Menubar,
-    InputText,
-    Password,
+    PrimeDialog,
     PrimeButton,
+    AuthLoginForm,
   },
   data() {
     return {
-      email: '',
-      password: '',
       authStore: useAuthStore(),
+      showLoginModal: false,
+      pendingRedirect: '',
       menuItems: [
         {
           label: 'Главная',
@@ -44,16 +44,35 @@ export default {
     user() {
       return this.authStore.user
     },
-    authError() {
-      return this.authStore.errorMessage
+    accountTitle() {
+      return this.user && this.user.name ? this.user.name : 'Аккаунт'
     },
   },
   methods: {
-    logout() {
-      this.authStore.logout()
+    async logout() {
+      await this.authStore.logout()
     },
-    login() {
-      this.authStore.login({ email: this.email, password: this.password })
+    openLoginModal() {
+      this.pendingRedirect = this.$route.fullPath
+      this.authStore.errorMessage = ''
+      this.showLoginModal = true
+    },
+    onLoginSuccess() {
+      this.showLoginModal = false
+      const redirectTarget = this.pendingRedirect || this.$route.fullPath
+
+      this.pendingRedirect = ''
+      this.authStore.errorMessage = ''
+
+      if (this.$route.fullPath !== redirectTarget) {
+        this.$router.replace(redirectTarget)
+      }
+    },
+    onLoginModalHide() {
+      this.authStore.errorMessage = ''
+    },
+    handleExternalLoginOpen() {
+      this.openLoginModal()
     },
   },
   mounted() {
@@ -62,6 +81,11 @@ export default {
       this.authStore.isAuthenticated = true
       this.authStore.getUser()
     }
+
+    window.addEventListener('open-login-modal', this.handleExternalLoginOpen)
+  },
+  beforeUnmount() {
+    window.removeEventListener('open-login-modal', this.handleExternalLoginOpen)
   },
 }
 </script>
@@ -72,7 +96,7 @@ export default {
       <div class="nog-title">
         <p class="title-badge"><i class="pi pi-shield" /> new order group</p>
         <h1>new order group</h1>
-        <p class="title-copy">Control Layer Interface</p>
+        <p class="title-copy">Панель управления</p>
       </div>
 
       <Menubar :model="menuItems" class="nog-menubar">
@@ -97,10 +121,31 @@ export default {
         </template>
 
         <template #end>
-          <p class="menu-state" :class="{ 'menu-state-online': isAuthenticated }">
-            <i :class="isAuthenticated ? 'pi pi-lock-open' : 'pi pi-lock'" />
-            <span>{{ isAuthenticated ? 'Authorized' : 'Guest mode' }}</span>
-          </p>
+          <div class="menu-auth-controls">
+            <p class="menu-state" :class="{ 'menu-state-online': isAuthenticated }">
+              <i :class="isAuthenticated ? 'pi pi-user' : 'pi pi-user-minus'" />
+              <span>{{ isAuthenticated ? accountTitle : 'Гость' }}</span>
+            </p>
+
+            <PrimeButton
+              v-if="!isAuthenticated"
+              label="Войти"
+              icon="pi pi-sign-in"
+              size="small"
+              class="menu-inline-action"
+              @click="openLoginModal"
+            />
+
+            <PrimeButton
+              v-else
+              label="Выйти"
+              icon="pi pi-sign-out"
+              text
+              size="small"
+              class="menu-inline-action menu-inline-action-logout"
+              @click="logout"
+            />
+          </div>
         </template>
       </Menubar>
     </header>
@@ -113,53 +158,19 @@ export default {
           </transition>
         </router-view>
       </section>
-
-      <aside class="auth-panel">
-        <div v-if="isAuthenticated" class="auth-card">
-          <h2><i class="pi pi-user" /> Активная сессия</h2>
-          <p class="auth-line">
-            <span>Пользователь:</span>
-            <strong>{{ user ? user.name : 'Operator' }}</strong>
-          </p>
-          <p class="auth-line">
-            <span>Статус:</span>
-            <strong class="status-online">Online</strong>
-          </p>
-          <PrimeButton label="Выйти" icon="pi pi-sign-out" class="auth-submit" @click="logout" />
-        </div>
-
-        <form v-else class="auth-card" @submit.prevent="login">
-          <h2><i class="pi pi-sign-in" /> Войти в систему</h2>
-          <p class="auth-caption">Уровень доступа для операторов New Order Group</p>
-
-          <label class="auth-label" for="email">Email</label>
-          <InputText
-            id="email"
-            v-model="email"
-            type="email"
-            autocomplete="email"
-            class="auth-input"
-            placeholder="name@neworder.group"
-            required
-          />
-
-          <label class="auth-label" for="password">Password</label>
-          <Password
-            id="password"
-            v-model="password"
-            inputClass="auth-input"
-            class="auth-password"
-            autocomplete="current-password"
-            :feedback="false"
-            toggleMask
-            required
-          />
-
-          <PrimeButton label="Войти" icon="pi pi-sign-in" type="submit" class="auth-submit" />
-          <p v-if="authError" class="auth-error">{{ authError }}</p>
-        </form>
-      </aside>
     </main>
+
+    <PrimeDialog
+      v-model:visible="showLoginModal"
+      modal
+      header="Войти"
+      :draggable="false"
+      :style="{ width: 'min(92vw, 28rem)' }"
+      class="auth-dialog"
+      @hide="onLoginModalHide"
+    >
+      <AuthLoginForm @success="onLoginSuccess" />
+    </PrimeDialog>
   </div>
 </template>
 
@@ -264,6 +275,12 @@ export default {
   font-size: 0.9rem;
 }
 
+.menu-auth-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
 .menu-state {
   display: inline-flex;
   align-items: center;
@@ -283,10 +300,26 @@ export default {
   background: #edf6f2;
 }
 
+:deep(.menu-inline-action.p-button) {
+  border-radius: 9999px;
+  padding: 0.42rem 0.8rem;
+}
+
+:deep(.menu-inline-action.p-button:not(.p-button-text)) {
+  border: 1px solid var(--nog-accent);
+  background: var(--nog-accent);
+}
+
+:deep(.menu-inline-action.p-button:not(.p-button-text):hover) {
+  border-color: var(--nog-accent-strong);
+  background: var(--nog-accent-strong);
+}
+
+:deep(.menu-inline-action-logout.p-button.p-button-text) {
+  color: var(--nog-accent);
+}
+
 .nog-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
-  gap: 1rem;
   max-width: 1240px;
   margin: 1rem auto 0;
 }
@@ -300,104 +333,12 @@ export default {
   min-height: 500px;
 }
 
-.auth-panel {
-  position: sticky;
-  top: 1rem;
-  height: fit-content;
+:deep(.auth-dialog .p-dialog-header) {
+  padding: 1rem 1.2rem 0.35rem;
 }
 
-.auth-card {
-  border: 1px solid var(--nog-border);
-  border-radius: 1rem;
-  background: var(--nog-surface-soft);
-  padding: 1rem;
-  box-shadow: 0 12px 24px rgba(16, 36, 29, 0.08);
-}
-
-.auth-card h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.auth-caption {
-  margin: 0.4rem 0 1rem;
-  color: var(--nog-text-subtle);
-  font-size: 0.88rem;
-}
-
-.auth-label {
-  display: block;
-  margin-bottom: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--nog-text-subtle);
-}
-
-.auth-label:not(:first-of-type) {
-  margin-top: 0.9rem;
-}
-
-.auth-password {
-  width: 100%;
-}
-
-:deep(.auth-input.p-inputtext),
-:deep(.auth-password .p-inputtext) {
-  width: 100%;
-  border: 1px solid var(--nog-border);
-  color: var(--nog-text);
-  background: var(--nog-surface);
-}
-
-:deep(.auth-input.p-inputtext:enabled:focus),
-:deep(.auth-password .p-inputtext:enabled:focus) {
-  border-color: #7ea796;
-  box-shadow: 0 0 0 0.2rem rgba(23, 71, 53, 0.15);
-}
-
-:deep(.auth-password.p-password) {
-  width: 100%;
-}
-
-:deep(.auth-submit.p-button) {
-  width: 100%;
-  margin-top: 1rem;
-  border: 1px solid var(--nog-accent);
-  background: var(--nog-accent);
-}
-
-:deep(.auth-submit.p-button:hover) {
-  border-color: var(--nog-accent-strong);
-  background: var(--nog-accent-strong);
-}
-
-.auth-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin: 0.75rem 0;
-  color: var(--nog-text-subtle);
-  font-size: 0.92rem;
-}
-
-.status-online {
-  color: var(--nog-accent);
-}
-
-.auth-error {
-  margin-top: 0.75rem;
-  border: 1px solid #b74747;
-  border-radius: 0.7rem;
-  padding: 0.45rem 0.6rem;
-  color: #8f2525;
-  font-size: 0.84rem;
-  background: #f8e9e9;
+:deep(.auth-dialog .p-dialog-content) {
+  padding: 0.6rem 1.2rem 1.2rem;
 }
 
 .route-fade-enter-active,
@@ -410,24 +351,15 @@ export default {
   opacity: 0;
 }
 
-@media (max-width: 1024px) {
-  .nog-main {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-panel {
-    position: static;
-  }
-}
-
 @media (max-width: 760px) {
   :deep(.nog-menubar .p-menubar-end) {
     margin-top: 0.5rem;
+    width: 100%;
   }
 
-  .menu-state {
+  .menu-auth-controls {
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
   }
 }
 </style>

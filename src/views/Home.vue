@@ -39,14 +39,11 @@ export default {
       ограниченного объёма информации достаточно, чтобы оценить подход и понять, как new order group
       масштабирует управляемый результат.
     </p>
+
   </section>
 </template>
 
 <style scoped>
-.view-home {
-  max-width: 80ch;
-}
-
 .view-badge {
   display: inline-flex;
   align-items: center;
