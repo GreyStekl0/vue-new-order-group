@@ -67,15 +67,15 @@ export default {
 </script>
 
 <template>
-  <div class="bho-shell">
-    <header class="bho-header">
-      <div class="bho-title">
-        <p class="title-badge"><i class="pi pi-shield" /> Black Hat Organization</p>
+  <div class="nog-shell">
+    <header class="nog-header">
+      <div class="nog-title">
+        <p class="title-badge"><i class="pi pi-shield" /> new order group</p>
         <h1>new order group</h1>
         <p class="title-copy">Control Layer Interface</p>
       </div>
 
-      <Menubar :model="menuItems" class="bho-menubar">
+      <Menubar :model="menuItems" class="nog-menubar">
         <template #item="{ item, props }">
           <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
             <a
@@ -105,7 +105,7 @@ export default {
       </Menubar>
     </header>
 
-    <main class="bho-main">
+    <main class="nog-main">
       <section class="content-panel">
         <router-view v-slot="{ Component }">
           <transition name="route-fade" mode="out-in">
@@ -164,29 +164,29 @@ export default {
 </template>
 
 <style scoped>
-.bho-shell {
-  --bho-bg: #f3f7f4;
-  --bho-surface: #ffffff;
-  --bho-surface-soft: #f8fbf9;
-  --bho-text: #10241d;
-  --bho-text-subtle: #3f544d;
-  --bho-border: #d4e3dc;
-  --bho-accent: #174735;
-  --bho-accent-strong: #0f3024;
+.nog-shell {
+  --nog-bg: #f3f7f4;
+  --nog-surface: #ffffff;
+  --nog-surface-soft: #f8fbf9;
+  --nog-text: #10241d;
+  --nog-text-subtle: #3f544d;
+  --nog-border: #d4e3dc;
+  --nog-accent: #174735;
+  --nog-accent-strong: #0f3024;
   min-height: 100vh;
   padding: clamp(1rem, 2vw, 2rem);
-  color: var(--bho-text);
+  color: var(--nog-text);
   background:
     radial-gradient(100% 200% at 100% 0%, #e6f2ec 0%, transparent 45%),
-    linear-gradient(180deg, #f8fcfa 0%, var(--bho-bg) 100%);
+    linear-gradient(180deg, #f8fcfa 0%, var(--nog-bg) 100%);
 }
 
-.bho-header {
+.nog-header {
   max-width: 1240px;
   margin: 0 auto;
 }
 
-.bho-title {
+.nog-title {
   margin-bottom: 1rem;
 }
 
@@ -200,11 +200,11 @@ export default {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--bho-surface);
-  background: var(--bho-accent);
+  color: var(--nog-surface);
+  background: var(--nog-accent);
 }
 
-.bho-title h1 {
+.nog-title h1 {
   margin: 0.7rem 0 0;
   font-family: 'Aldrich', 'Bahnschrift', 'Segoe UI', sans-serif;
   font-size: clamp(2rem, 4vw, 3.2rem);
@@ -215,21 +215,21 @@ export default {
 
 .title-copy {
   margin-top: 0.45rem;
-  color: var(--bho-text-subtle);
+  color: var(--nog-text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 0.8rem;
 }
 
-:deep(.bho-menubar.p-menubar) {
-  border: 1px solid var(--bho-border);
+:deep(.nog-menubar.p-menubar) {
+  border: 1px solid var(--nog-border);
   border-radius: 0.95rem;
-  background: var(--bho-surface);
+  background: var(--nog-surface);
   padding: 0.45rem 0.65rem;
   box-shadow: 0 12px 26px rgba(16, 36, 29, 0.08);
 }
 
-:deep(.bho-menubar .p-menubar-root-list) {
+:deep(.nog-menubar .p-menubar-root-list) {
   gap: 0.4rem;
 }
 
@@ -239,25 +239,25 @@ export default {
   gap: 0.45rem;
   border-radius: 0.65rem;
   padding: 0.52rem 0.75rem;
-  color: var(--bho-text);
+  color: var(--nog-text);
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .menu-link:hover {
-  color: var(--bho-accent);
+  color: var(--nog-accent);
   background: #ecf4f0;
 }
 
 .menu-link-active {
-  color: var(--bho-surface);
-  background: var(--bho-accent);
+  color: var(--nog-surface);
+  background: var(--nog-accent);
 }
 
 .menu-link-active:hover {
-  background: var(--bho-accent-strong);
-  color: var(--bho-surface);
+  background: var(--nog-accent-strong);
+  color: var(--nog-surface);
 }
 
 .menu-icon {
@@ -269,21 +269,21 @@ export default {
   align-items: center;
   gap: 0.5rem;
   margin: 0;
-  border: 1px solid var(--bho-border);
+  border: 1px solid var(--nog-border);
   border-radius: 9999px;
   padding: 0.35rem 0.75rem;
-  color: var(--bho-text-subtle);
+  color: var(--nog-text-subtle);
   font-size: 0.78rem;
   font-weight: 600;
 }
 
 .menu-state-online {
   border-color: #afc8be;
-  color: var(--bho-accent);
+  color: var(--nog-accent);
   background: #edf6f2;
 }
 
-.bho-main {
+.nog-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
   gap: 1rem;
@@ -292,9 +292,9 @@ export default {
 }
 
 .content-panel {
-  border: 1px solid var(--bho-border);
+  border: 1px solid var(--nog-border);
   border-radius: 1rem;
-  background: var(--bho-surface);
+  background: var(--nog-surface);
   box-shadow: 0 18px 34px rgba(16, 36, 29, 0.08);
   padding: clamp(1rem, 2vw, 1.75rem);
   min-height: 500px;
@@ -307,9 +307,9 @@ export default {
 }
 
 .auth-card {
-  border: 1px solid var(--bho-border);
+  border: 1px solid var(--nog-border);
   border-radius: 1rem;
-  background: var(--bho-surface-soft);
+  background: var(--nog-surface-soft);
   padding: 1rem;
   box-shadow: 0 12px 24px rgba(16, 36, 29, 0.08);
 }
@@ -325,7 +325,7 @@ export default {
 
 .auth-caption {
   margin: 0.4rem 0 1rem;
-  color: var(--bho-text-subtle);
+  color: var(--nog-text-subtle);
   font-size: 0.88rem;
 }
 
@@ -336,19 +336,23 @@ export default {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--bho-text-subtle);
+  color: var(--nog-text-subtle);
 }
 
 .auth-label:not(:first-of-type) {
   margin-top: 0.9rem;
 }
 
+.auth-password {
+  width: 100%;
+}
+
 :deep(.auth-input.p-inputtext),
 :deep(.auth-password .p-inputtext) {
   width: 100%;
-  border: 1px solid var(--bho-border);
-  color: var(--bho-text);
-  background: var(--bho-surface);
+  border: 1px solid var(--nog-border);
+  color: var(--nog-text);
+  background: var(--nog-surface);
 }
 
 :deep(.auth-input.p-inputtext:enabled:focus),
@@ -357,20 +361,20 @@ export default {
   box-shadow: 0 0 0 0.2rem rgba(23, 71, 53, 0.15);
 }
 
-:deep(.auth-password .p-password) {
+:deep(.auth-password.p-password) {
   width: 100%;
 }
 
 :deep(.auth-submit.p-button) {
   width: 100%;
   margin-top: 1rem;
-  border: 1px solid var(--bho-accent);
-  background: var(--bho-accent);
+  border: 1px solid var(--nog-accent);
+  background: var(--nog-accent);
 }
 
 :deep(.auth-submit.p-button:hover) {
-  border-color: var(--bho-accent-strong);
-  background: var(--bho-accent-strong);
+  border-color: var(--nog-accent-strong);
+  background: var(--nog-accent-strong);
 }
 
 .auth-line {
@@ -378,12 +382,12 @@ export default {
   justify-content: space-between;
   gap: 0.75rem;
   margin: 0.75rem 0;
-  color: var(--bho-text-subtle);
+  color: var(--nog-text-subtle);
   font-size: 0.92rem;
 }
 
 .status-online {
-  color: var(--bho-accent);
+  color: var(--nog-accent);
 }
 
 .auth-error {
@@ -407,7 +411,7 @@ export default {
 }
 
 @media (max-width: 1024px) {
-  .bho-main {
+  .nog-main {
     grid-template-columns: 1fr;
   }
 
@@ -417,7 +421,7 @@ export default {
 }
 
 @media (max-width: 760px) {
-  :deep(.bho-menubar .p-menubar-end) {
+  :deep(.nog-menubar .p-menubar-end) {
     margin-top: 0.5rem;
   }
 

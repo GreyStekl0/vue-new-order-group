@@ -6,37 +6,45 @@ export default {
 
 <template>
   <section class="view-home">
-    <p class="view-badge"><i class="pi pi-compass" /> Strategic Overview</p>
-    <h2>Центр управления New Order Group</h2>
+    <p class="view-badge"><i class="pi pi-shield" /> new order group</p>
+
+    <h2>
+      Когда штурм <span class="accent">запрещён</span>, остаётся демократия
+    </h2>
+
     <p class="lead">
-      Навигация и рабочие зоны готовы к подключению серверных данных. Интерфейс построен как
-      единая контрольная панель в стиле Black Hat Organization.
+      В золотые времена города брались силой, страхом и обманом. Власть доставалась самым
+      могущественным. Теперь правила изменились: выборы, комиссии, отчёты и бесконечные формальности.
+      В таких условиях нужна система, которая работает точнее и тише.
     </p>
 
-    <div class="grid">
-      <article class="card">
-        <h3><i class="pi pi-map-marker" /> Регионы</h3>
-        <p>Управление региональными направлениями и географией операций.</p>
-      </article>
+    <hr class="divider" />
 
-      <article class="card">
-        <h3><i class="pi pi-building-columns" /> Участки</h3>
-        <p>Контроль статусов участков и синхронизация результатов по маршрутам.</p>
-      </article>
+    <h3>new order group - ваше решение в эпоху процедур</h3>
 
-      <article class="card muted">
-        <h3><i class="pi pi-database" /> Интеграции</h3>
-        <p>Данные будут заполняться API-слоем после подключения бэкенда.</p>
-      </article>
-    </div>
+    <p class="copy">
+      new order group помогает сохранять влияние в среде, где каждый шаг требует легитимного вида и
+      дисциплины исполнения. Мы берём на себя сложные этапы подготовки, координации и контроля
+      кампаний, чтобы вы не тратили ресурсы на рутину.
+    </p>
+
+    <p class="copy">
+      Наша модель работы учитывает риски и ограничения современного процесса принятия решений.
+      Команда выстраивает комплексный сценарий действий: от базовой подготовки до финальной фиксации
+      результата, с минимальным шумом и предсказуемым итогом.
+    </p>
+
+    <p class="copy">
+      После авторизации вы сможете посмотреть примеры завершённых кампаний и текущих операций. Даже
+      ограниченного объёма информации достаточно, чтобы оценить подход и понять, как new order group
+      масштабирует управляемый результат.
+    </p>
   </section>
 </template>
 
 <style scoped>
-.view-home h2 {
-  margin: 0.75rem 0 0;
-  font-size: clamp(1.45rem, 2.4vw, 2rem);
-  line-height: 1.2;
+.view-home {
+  max-width: 80ch;
 }
 
 .view-badge {
@@ -50,48 +58,41 @@ export default {
   font-weight: 700;
   color: #174735;
   background: #e7f2ec;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.view-home h2 {
+  margin: 0.85rem 0 0;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.accent {
+  color: #174735;
 }
 
 .lead {
-  margin-top: 0.75rem;
+  margin-top: 0.9rem;
   color: #3e524b;
+  font-size: 1.03rem;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
-  margin-top: 1.1rem;
+.divider {
+  margin: 1.15rem 0;
+  border: 0;
+  border-top: 3px solid #174735;
+  opacity: 0.7;
 }
 
-.card {
-  border: 1px solid #d6e2dc;
-  border-radius: 0.85rem;
-  background: #ffffff;
-  padding: 0.95rem;
-}
-
-.card h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
+.view-home h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  line-height: 1.25;
 }
 
-.card p {
-  margin: 0.6rem 0 0;
-  color: #445851;
-  font-size: 0.92rem;
-}
-
-.muted {
-  background: #f4f8f6;
-}
-
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+.copy {
+  margin-top: 0.8rem;
+  color: #455952;
 }
 </style>

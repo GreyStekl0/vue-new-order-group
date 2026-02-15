@@ -10,7 +10,7 @@ import Aura from '@primeuix/themes/aura'
 import App from './App.vue'
 import router from '@/router.js'
 
-const BlackHatPreset = definePreset(Aura, {
+const NewOrderPreset = definePreset(Aura, {
   semantic: {
     primary: {
       50: '#eef7f2',
@@ -35,7 +35,7 @@ app.use(router)
 app.use(PrimeVue, {
   ripple: true,
   theme: {
-    preset: BlackHatPreset,
+    preset: NewOrderPreset,
     options: {
       darkModeSelector: false,
     },
