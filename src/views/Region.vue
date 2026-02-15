@@ -1,6 +1,11 @@
 <script>
+import EmptyState from '@/components/EmptyState.vue'
+
 export default {
   name: 'RegionPageView',
+  components: {
+    EmptyState,
+  },
   data() {
     return {
       regions: [],
@@ -18,7 +23,6 @@ export default {
   <section class="view-region">
     <header class="page-head">
       <h2 class="nog-section-heading"><i class="pi pi-map" /> Регионы</h2>
-      <p class="nog-section-description">Раздел подключён к модели данных. Сейчас список регионов пуст.</p>
     </header>
 
     <div v-if="hasRegions" class="list-wrap">
@@ -27,18 +31,13 @@ export default {
       </article>
     </div>
 
-    <div v-else class="nog-empty-state">
-      <i class="pi pi-inbox nog-empty-icon" />
-      <h3 class="nog-empty-title">Пока нет регионов</h3>
-      <p class="nog-empty-copy">
-        Как только backend передаст данные, список появится здесь автоматически без изменения
-        интерфейса.
-      </p>
-      <div class="nog-empty-meta">
-        <span class="nog-empty-meta-item"><i class="pi pi-database" /> Источник: API</span>
-        <span class="nog-empty-meta-item"><i class="pi pi-sync" /> Состояние: пустой ответ</span>
-      </div>
-    </div>
+    <EmptyState
+      v-else
+      class="mt-8"
+      icon="pi pi-inbox"
+      title="Глобальная карта чиста"
+      description="Центр управления ожидает подтверждения новых целей. Модуль геополитического влияния находится в режиме пассивного мониторинга."
+    />
   </section>
 </template>
 

@@ -1,6 +1,11 @@
 <script>
+import EmptyState from '@/components/EmptyState.vue'
+
 export default {
   name: 'PollingStationPageView',
+  components: {
+    EmptyState,
+  },
   data() {
     return {
       pollingStations: [],
@@ -17,10 +22,9 @@ export default {
 <template>
   <section class="view-polling">
     <header class="page-head">
-      <h2 class="nog-section-heading"><i class="pi pi-building-columns" /> Участки для голосования</h2>
-      <p class="nog-section-description">
-        Раздел готов к отображению данных. Сейчас backend возвращает пустой набор участков.
-      </p>
+      <h2 class="nog-section-heading">
+        <i class="pi pi-building-columns" /> Участки для голосования
+      </h2>
     </header>
 
     <div v-if="hasPollingStations" class="status-board">
@@ -30,17 +34,13 @@ export default {
       </article>
     </div>
 
-    <div v-else class="nog-empty-state">
-      <i class="pi pi-folder-open nog-empty-icon" />
-      <h3 class="nog-empty-title">Участки пока не получены</h3>
-      <p class="nog-empty-copy">
-        После синхронизации с сервером здесь появится список участков и их текущие статусы.
-      </p>
-      <div class="nog-empty-meta">
-        <span class="nog-empty-meta-item"><i class="pi pi-database" /> Источник: API</span>
-        <span class="nog-empty-meta-item"><i class="pi pi-filter-slash" /> Результат: 0 записей</span>
-      </div>
-    </div>
+    <EmptyState
+      v-else
+      class="mt-8"
+      icon="pi pi-folder-open"
+      title="Сектор не инициализирован"
+      description="Полевые агенты еще не передали данные с мест. Не предпринимайте активных действий до полной синхронизации протоколов."
+    />
   </section>
 </template>
 
