@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Home.vue'
-import Region from './views/Regions.vue'
+import Region from './views/Region.vue'
 import PollingStation from './views/PollingStation.vue'
 
 const routes = [
