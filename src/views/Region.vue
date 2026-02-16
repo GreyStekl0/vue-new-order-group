@@ -20,14 +20,21 @@ export default {
 </script>
 
 <template>
-  <section class="view-region">
-    <header class="page-head">
-      <h2 class="nog-section-heading"><i class="pi pi-map" /> Регионы</h2>
+  <section>
+    <header>
+      <h2 class="m-0 flex items-center gap-[0.55rem] text-2xl">
+        <i class="pi pi-map" />
+        Регионы
+      </h2>
     </header>
 
-    <div v-if="hasRegions" class="list-wrap">
-      <article v-for="region in regions" :key="region.id" class="region-row nog-data-card">
-        <strong class="nog-data-card-title">{{ region.name }}</strong>
+    <div v-if="hasRegions" class="mt-[1.1rem] grid gap-[0.7rem]">
+      <article
+        v-for="region in regions"
+        :key="region.id"
+        class="rounded-[0.8rem] border border-(--nog-border-soft) bg-(--nog-accent-surface) px-[0.9rem] py-3"
+      >
+        <strong class="text-(--nog-text-strong)">{{ region.name }}</strong>
       </article>
     </div>
 
@@ -40,17 +47,3 @@ export default {
     />
   </section>
 </template>
-
-<style scoped>
-.list-wrap {
-  margin-top: 1.1rem;
-  display: grid;
-  gap: 0.7rem;
-}
-
-.region-row {
-  --nog-card-border-color: var(--nog-border-soft);
-  --nog-card-bg: var(--nog-accent-surface);
-  --nog-card-padding: 0.75rem 0.9rem;
-}
-</style>

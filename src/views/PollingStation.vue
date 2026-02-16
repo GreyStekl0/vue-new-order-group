@@ -20,17 +20,22 @@ export default {
 </script>
 
 <template>
-  <section class="view-polling">
-    <header class="page-head">
-      <h2 class="nog-section-heading">
-        <i class="pi pi-building-columns" /> Участки для голосования
+  <section>
+    <header>
+      <h2 class="m-0 flex items-center gap-[0.55rem] text-2xl">
+        <i class="pi pi-building-columns" />
+        Участки для голосования
       </h2>
     </header>
 
-    <div v-if="hasPollingStations" class="status-board">
-      <article v-for="station in pollingStations" :key="station.id" class="tile nog-data-card">
-        <h3 class="nog-data-card-title">{{ station.name }}</h3>
-        <p class="nog-data-card-copy">{{ station.status }}</p>
+    <div v-if="hasPollingStations" class="mt-4 grid grid-cols-3 gap-3 max-[960px]:grid-cols-1">
+      <article
+        v-for="station in pollingStations"
+        :key="station.id"
+        class="rounded-[0.8rem] border border-(--nog-border-soft-strong) bg-(--nog-surface) p-[0.85rem]"
+      >
+        <h3 class="m-0 text-base text-(--nog-text-strong)">{{ station.name }}</h3>
+        <p class="mt-2 text-[0.9rem] text-(--nog-text-copy-soft)">{{ station.status }}</p>
       </article>
     </div>
 
@@ -43,28 +48,3 @@ export default {
     />
   </section>
 </template>
-
-<style scoped>
-.status-board {
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.tile {
-  --nog-card-border-color: var(--nog-border-soft-strong);
-  --nog-card-bg: var(--nog-surface);
-  --nog-card-padding: 0.85rem;
-}
-
-.tile .nog-data-card-title {
-  font-size: 1rem;
-}
-
-@media (max-width: 960px) {
-  .status-board {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

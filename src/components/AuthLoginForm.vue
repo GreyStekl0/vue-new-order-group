@@ -104,158 +104,74 @@ export default {
 </script>
 
 <template>
-  <form class="auth-form" novalidate @submit.prevent="submit">
-    <p class="auth-caption">Введите данные аккаунта new order group</p>
+  <form novalidate @submit.prevent="submit">
+    <p class="mb-[0.8rem] mt-0 text-[0.9rem] text-(--nog-text-subtle)">
+      Введите данные аккаунта new order group
+    </p>
 
-    <label class="auth-label" for="login-email">Email</label>
+    <label
+      class="mb-[0.35rem] block text-[0.8rem] font-bold uppercase tracking-[0.08em] text-(--nog-text-subtle)"
+      for="login-email"
+    >
+      Email
+    </label>
     <InputText
       id="login-email"
       v-model.trim="email"
       type="email"
       autocomplete="username"
-      class="auth-input"
+      class="!w-full !rounded-[0.72rem] !border !border-(--nog-form-input-border) !bg-(--nog-surface) !px-3 !py-[0.62rem] !font-semibold !text-(--nog-text) !shadow-[inset_0_0_0_1px_var(--nog-form-input-border-soft)] focus:!border-(--nog-form-input-focus) focus:!shadow-[inset_0_0_0_1px_var(--nog-form-input-focus),0_0_0_0.2rem_rgba(23,71,53,0.15)]"
       :invalid="Boolean(emailError)"
       placeholder="name@neworder.group"
       @input="onEmailInput"
     />
-    <p v-if="emailError" class="auth-field-error">{{ emailError }}</p>
+    <p
+      v-if="emailError"
+      class="mt-[0.35rem] rounded-[0.6rem] border border-(--nog-danger-border) bg-(--nog-danger-surface) px-2 py-[0.35rem] text-[0.82rem] text-(--nog-danger-text)"
+    >
+      {{ emailError }}
+    </p>
 
-    <label class="auth-label" for="login-password">Пароль</label>
-    <div class="password-wrap">
+    <label
+      class="mb-[0.35rem] mt-3 block text-[0.8rem] font-bold uppercase tracking-[0.08em] text-(--nog-text-subtle)"
+      for="login-password"
+    >
+      Пароль
+    </label>
+    <div class="relative">
       <InputText
         id="login-password"
         v-model="password"
         :type="showPassword ? 'text' : 'password'"
         autocomplete="current-password"
-        class="auth-input auth-password-input"
+        class="!w-full !rounded-[0.72rem] !border !border-(--nog-form-input-border) !bg-(--nog-surface) !px-3 !py-[0.62rem] !pr-10 !font-semibold !text-(--nog-text) !shadow-[inset_0_0_0_1px_var(--nog-form-input-border-soft)] focus:!border-(--nog-form-input-focus) focus:!shadow-[inset_0_0_0_1px_var(--nog-form-input-focus),0_0_0_0.2rem_rgba(23,71,53,0.15)]"
         :invalid="Boolean(passwordError)"
         @input="onPasswordInput"
       />
       <button
         type="button"
-        class="password-toggle"
+        class="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer rounded-lg border-0 bg-transparent p-[0.35rem] text-(--nog-text-subtle) transition-colors hover:bg-(--nog-form-hover-surface) hover:text-(--nog-accent)"
         :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
         @click="togglePassword"
       >
         <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
       </button>
     </div>
-    <p v-if="passwordError" class="auth-field-error">{{ passwordError }}</p>
+    <p
+      v-if="passwordError"
+      class="mt-[0.35rem] rounded-[0.6rem] border border-(--nog-danger-border) bg-(--nog-danger-surface) px-2 py-[0.35rem] text-[0.82rem] text-(--nog-danger-text)"
+    >
+      {{ passwordError }}
+    </p>
 
-    <button type="submit" class="auth-submit" :disabled="submitting">
+    <button
+      type="submit"
+      class="mt-[0.95rem] inline-flex w-full cursor-pointer items-center justify-center gap-[0.45rem] rounded-[0.72rem] border border-(--nog-accent) bg-(--nog-accent) px-[0.9rem] py-[0.7rem] text-[0.95rem] font-bold text-(--nog-surface) transition-colors hover:border-(--nog-accent-strong) hover:bg-(--nog-accent-strong) disabled:cursor-not-allowed disabled:opacity-80"
+      :disabled="submitting"
+    >
       <i v-if="submitting" class="pi pi-spinner pi-spin" />
       <i v-else class="pi pi-sign-in" />
       <span>{{ submitting ? 'Вход...' : 'Войти' }}</span>
     </button>
   </form>
 </template>
-
-<style scoped>
-.auth-form {
-  --auth-text: var(--nog-text);
-  --auth-text-subtle: var(--nog-text-subtle);
-  --auth-accent: var(--nog-accent);
-  --auth-accent-strong: var(--nog-accent-strong);
-}
-
-.auth-caption {
-  margin: 0 0 0.8rem;
-  color: var(--auth-text-subtle);
-  font-size: 0.9rem;
-}
-
-.auth-label {
-  display: block;
-  margin-bottom: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--auth-text-subtle);
-}
-
-.auth-label:not(:first-of-type) {
-  margin-top: 0.75rem;
-}
-
-.auth-input {
-  width: 100%;
-  border: 1px solid var(--nog-form-input-border);
-  border-radius: 0.72rem;
-  padding: 0.62rem 0.75rem;
-  font-weight: 600;
-  color: var(--auth-text);
-  background: var(--nog-surface);
-  box-shadow: inset 0 0 0 1px var(--nog-form-input-border-soft);
-}
-
-.auth-input:focus {
-  border-color: var(--nog-form-input-focus);
-  box-shadow:
-    inset 0 0 0 1px var(--nog-form-input-focus),
-    0 0 0 0.2rem rgba(23, 71, 53, 0.15);
-}
-
-.password-wrap {
-  position: relative;
-}
-
-.auth-password-input {
-  padding-right: 2.55rem;
-}
-
-.password-toggle {
-  position: absolute;
-  top: 50%;
-  right: 0.25rem;
-  transform: translateY(-50%);
-  border: 0;
-  border-radius: 0.5rem;
-  padding: 0.35rem;
-  color: var(--auth-text-subtle);
-  background: transparent;
-  cursor: pointer;
-}
-
-.password-toggle:hover {
-  color: var(--auth-accent);
-  background: var(--nog-form-hover-surface);
-}
-
-.auth-field-error {
-  margin-top: 0.35rem;
-  border: 1px solid var(--nog-danger-border);
-  border-radius: 0.6rem;
-  padding: 0.35rem 0.5rem;
-  color: var(--nog-danger-text);
-  font-size: 0.82rem;
-  background: var(--nog-danger-surface);
-}
-
-.auth-submit {
-  display: inline-flex;
-  gap: 0.45rem;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: 0.95rem;
-  border-radius: 0.72rem;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--auth-accent) !important;
-  color: var(--nog-surface) !important;
-  background: var(--auth-accent) !important;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.auth-submit:hover {
-  border-color: var(--auth-accent-strong) !important;
-  background: var(--auth-accent-strong) !important;
-}
-
-.auth-submit:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
-}
-</style>

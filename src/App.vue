@@ -47,6 +47,26 @@ export default {
     accountTitle() {
       return this.user && this.user.name ? this.user.name : 'Аккаунт'
     },
+    menubarPt() {
+      return {
+        rootList: {
+          class: 'gap-[0.4rem]',
+        },
+        end: {
+          class: 'max-[760px]:mt-2 max-[760px]:w-full',
+        },
+      }
+    },
+    loginDialogPt() {
+      return {
+        header: {
+          class: 'px-[1.2rem] pt-4 pb-[0.35rem]',
+        },
+        content: {
+          class: 'px-[1.2rem] pt-[0.6rem] pb-[1.2rem]',
+        },
+      }
+    },
   },
   methods: {
     async logout() {
@@ -91,36 +111,65 @@ export default {
 </script>
 
 <template>
-  <div class="nog-shell">
-    <header class="nog-header">
-      <div class="nog-title">
-        <p class="title-badge"><i class="pi pi-shield" /> new order group</p>
+  <div
+    class="min-h-screen bg-[radial-gradient(100%_200%_at_100%_0%,var(--nog-bg-gradient-top)_0%,transparent_45%),linear-gradient(180deg,var(--nog-bg-gradient-bottom)_0%,var(--nog-bg)_100%)] p-[clamp(1rem,2vw,2rem)] text-(--nog-text)"
+  >
+    <header class="mx-auto max-w-[1240px]">
+      <div class="mb-4">
+        <p
+          class="inline-flex items-center gap-[0.45rem] rounded-full bg-(--nog-accent) px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-(--nog-surface)"
+        >
+          <i class="pi pi-shield" />
+          new order group
+        </p>
       </div>
 
-      <Menubar :model="menuItems" class="nog-menubar">
+      <Menubar
+        :model="menuItems"
+        :pt="menubarPt"
+        class="!rounded-[0.95rem] !border !border-(--nog-border) !bg-(--nog-surface) !px-[0.65rem] !py-[0.45rem] !shadow-[0_12px_26px_rgba(16,36,29,0.08)]"
+      >
         <template #item="{ item, props }">
           <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
             <a
               :href="routerProps.href"
               v-bind="props.action"
-              :class="['menu-link', { 'menu-link-active': routerProps.isActive }]"
+              :class="[
+                'inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)',
+                routerProps.isActive
+                  ? '!bg-(--nog-accent) !text-(--nog-surface) hover:!bg-(--nog-accent-strong) hover:!text-(--nog-surface)'
+                  : '',
+              ]"
               @click="routerProps.navigate"
               @keydown.enter.space="routerProps.navigate"
             >
-              <i v-if="item.icon" :class="[item.icon, 'menu-icon']" />
+              <i v-if="item.icon" :class="[item.icon, 'text-[0.9rem]']" />
               <span>{{ item.label }}</span>
             </a>
           </router-link>
 
-          <a v-else :href="item.url" :target="item.target" v-bind="props.action" class="menu-link">
-            <i v-if="item.icon" :class="[item.icon, 'menu-icon']" />
+          <a
+            v-else
+            :href="item.url"
+            :target="item.target"
+            v-bind="props.action"
+            class="inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)"
+          >
+            <i v-if="item.icon" :class="[item.icon, 'text-[0.9rem]']" />
             <span>{{ item.label }}</span>
           </a>
         </template>
 
         <template #end>
-          <div class="menu-auth-controls">
-            <p class="menu-state" :class="{ 'menu-state-online': isAuthenticated }">
+          <div class="inline-flex items-center gap-[0.55rem] max-[760px]:w-full max-[760px]:justify-between">
+            <p
+              class="m-0 inline-flex items-center gap-2 rounded-full border border-(--nog-border) px-3 py-[0.35rem] text-[0.78rem] font-semibold text-(--nog-text-subtle)"
+              :class="
+                isAuthenticated
+                  ? 'border-(--nog-online-border) bg-(--nog-accent-soft) text-(--nog-accent)'
+                  : ''
+              "
+            >
               <i :class="isAuthenticated ? 'pi pi-user' : 'pi pi-user-minus'" />
               <span>{{ isAuthenticated ? accountTitle : 'Гость' }}</span>
             </p>
@@ -130,7 +179,7 @@ export default {
               label="Войти"
               icon="pi pi-sign-in"
               size="small"
-              class="menu-inline-action"
+              class="!rounded-full !border !border-(--nog-accent) !bg-(--nog-accent) !px-[0.8rem] !py-[0.42rem] hover:!border-(--nog-accent-strong) hover:!bg-(--nog-accent-strong)"
               @click="openLoginModal"
             />
 
@@ -140,7 +189,7 @@ export default {
               icon="pi pi-sign-out"
               text
               size="small"
-              class="menu-inline-action menu-inline-action-logout"
+              class="!rounded-full !px-[0.8rem] !py-[0.42rem] !text-(--nog-accent)"
               @click="logout"
             />
           </div>
@@ -148,10 +197,18 @@ export default {
       </Menubar>
     </header>
 
-    <main class="nog-main">
-      <section class="content-panel">
+    <main class="mx-auto mt-4 max-w-[1240px]">
+      <section
+        class="min-h-[500px] rounded-2xl border border-(--nog-border) bg-(--nog-surface) p-[clamp(1rem,2vw,1.75rem)] shadow-[0_18px_34px_rgba(16,36,29,0.08)]"
+      >
         <router-view v-slot="{ Component }">
-          <transition name="route-fade" mode="out-in">
+          <transition
+            mode="out-in"
+            enter-active-class="transition-opacity duration-200 ease-[ease]"
+            leave-active-class="transition-opacity duration-200 ease-[ease]"
+            enter-from-class="opacity-0"
+            leave-to-class="opacity-0"
+          >
             <component :is="Component" />
           </transition>
         </router-view>
@@ -164,175 +221,10 @@ export default {
       header="Войти"
       :draggable="false"
       :style="{ width: 'min(92vw, 28rem)' }"
-      class="auth-dialog"
+      :pt="loginDialogPt"
       @hide="onLoginModalHide"
     >
       <AuthLoginForm @success="onLoginSuccess" />
     </PrimeDialog>
   </div>
 </template>
-
-<style scoped>
-.nog-shell {
-  min-height: 100vh;
-  padding: clamp(1rem, 2vw, 2rem);
-  color: var(--nog-text);
-  background:
-    radial-gradient(100% 200% at 100% 0%, var(--nog-bg-gradient-top) 0%, transparent 45%),
-    linear-gradient(180deg, var(--nog-bg-gradient-bottom) 0%, var(--nog-bg) 100%);
-}
-
-.nog-header {
-  max-width: 1240px;
-  margin: 0 auto;
-}
-
-.nog-title {
-  margin-bottom: 1rem;
-}
-
-.title-badge {
-  display: inline-flex;
-  gap: 0.45rem;
-  align-items: center;
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--nog-surface);
-  background: var(--nog-accent);
-}
-
-:deep(.nog-menubar.p-menubar) {
-  border: 1px solid var(--nog-border);
-  border-radius: 0.95rem;
-  background: var(--nog-surface);
-  padding: 0.45rem 0.65rem;
-  box-shadow: 0 12px 26px rgba(16, 36, 29, 0.08);
-}
-
-:deep(.nog-menubar .p-menubar-root-list) {
-  gap: 0.4rem;
-}
-
-.menu-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  border-radius: 0.65rem;
-  padding: 0.52rem 0.75rem;
-  color: var(--nog-text);
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.menu-link:hover {
-  color: var(--nog-accent);
-  background: var(--nog-hover-surface);
-}
-
-.menu-link-active {
-  color: var(--nog-surface);
-  background: var(--nog-accent);
-}
-
-.menu-link-active:hover {
-  background: var(--nog-accent-strong);
-  color: var(--nog-surface);
-}
-
-.menu-icon {
-  font-size: 0.9rem;
-}
-
-.menu-auth-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.menu-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  border: 1px solid var(--nog-border);
-  border-radius: 9999px;
-  padding: 0.35rem 0.75rem;
-  color: var(--nog-text-subtle);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.menu-state-online {
-  border-color: var(--nog-online-border);
-  color: var(--nog-accent);
-  background: var(--nog-accent-soft);
-}
-
-:deep(.menu-inline-action.p-button) {
-  border-radius: 9999px;
-  padding: 0.42rem 0.8rem;
-}
-
-:deep(.menu-inline-action.p-button:not(.p-button-text)) {
-  border: 1px solid var(--nog-accent);
-  background: var(--nog-accent);
-}
-
-:deep(.menu-inline-action.p-button:not(.p-button-text):hover) {
-  border-color: var(--nog-accent-strong);
-  background: var(--nog-accent-strong);
-}
-
-:deep(.menu-inline-action-logout.p-button.p-button-text) {
-  color: var(--nog-accent);
-}
-
-.nog-main {
-  max-width: 1240px;
-  margin: 1rem auto 0;
-}
-
-.content-panel {
-  border: 1px solid var(--nog-border);
-  border-radius: 1rem;
-  background: var(--nog-surface);
-  box-shadow: 0 18px 34px rgba(16, 36, 29, 0.08);
-  padding: clamp(1rem, 2vw, 1.75rem);
-  min-height: 500px;
-}
-
-:deep(.auth-dialog .p-dialog-header) {
-  padding: 1rem 1.2rem 0.35rem;
-}
-
-:deep(.auth-dialog .p-dialog-content) {
-  padding: 0.6rem 1.2rem 1.2rem;
-}
-
-.route-fade-enter-active,
-.route-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.route-fade-enter-from,
-.route-fade-leave-to {
-  opacity: 0;
-}
-
-@media (max-width: 760px) {
-  :deep(.nog-menubar .p-menubar-end) {
-    margin-top: 0.5rem;
-    width: 100%;
-  }
-
-  .menu-auth-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-</style>
