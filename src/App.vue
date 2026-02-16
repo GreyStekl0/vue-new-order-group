@@ -127,7 +127,7 @@ export default {
 
       <Menubar :model="menuItems" :pt="menubarPt" class="app-menubar">
         <template #item="{ item }">
-          <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
+          <router-link v-slot="routerProps" :to="item.route" custom>
             <a
               :href="routerProps.href"
               :class="[
@@ -140,11 +140,6 @@ export default {
               <span>{{ item.label }}</span>
             </a>
           </router-link>
-
-          <a v-else :href="item.url" :target="item.target" class="app-nav-link">
-            <i v-if="item.icon" :class="[item.icon, 'app-nav-icon']" />
-            <span>{{ item.label }}</span>
-          </a>
         </template>
 
         <template #end>
