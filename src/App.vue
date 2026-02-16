@@ -4,6 +4,7 @@ import PrimeDialog from 'primevue/dialog'
 import PrimeButton from 'primevue/button'
 
 import AuthLoginForm from '@/components/AuthLoginForm.vue'
+import appRouter from '@/router.js'
 import { useAuthStore } from '@/stores/authStore'
 
 const MENUBAR_PT = Object.freeze({
@@ -69,23 +70,27 @@ export default {
     },
   },
   methods: {
+    getCurrentFullPath() {
+      return appRouter.currentRoute.value.fullPath
+    },
     async logout() {
       await this.authStore.logout()
     },
     openLoginModal() {
-      this.pendingRedirect = this.$route.fullPath
+      this.pendingRedirect = this.getCurrentFullPath()
       this.authStore.errorMessage = ''
       this.showLoginModal = true
     },
     onLoginSuccess() {
       this.showLoginModal = false
-      const redirectTarget = this.pendingRedirect || this.$route.fullPath
+      const currentFullPath = this.getCurrentFullPath()
+      const redirectTarget = this.pendingRedirect || currentFullPath
 
       this.pendingRedirect = ''
       this.authStore.errorMessage = ''
 
-      if (this.$route.fullPath !== redirectTarget) {
-        this.$router.replace(redirectTarget)
+      if (currentFullPath !== redirectTarget) {
+        appRouter.replace(redirectTarget)
       }
     },
     onLoginModalHide() {
