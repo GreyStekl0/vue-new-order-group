@@ -1,7 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Aldrich&family=Barlow:wght@400;500;600;700&display=swap');
 @import './base.css';
 @import 'tailwindcss';
 @import './common.css';
+
+@font-face {
+  font-family: 'Russo One';
+  src: url('./fonts/RussoOne/RussoOne-Regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  src:
+    url('./fonts/Barlow/Barlow-Regular.woff2') format('woff2'),
+    url('./fonts/Barlow/Barlow-Regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  src:
+    url('./fonts/Barlow/Barlow-Medium.woff2') format('woff2'),
+    url('./fonts/Barlow/Barlow-Medium.woff') format('woff');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  src:
+    url('./fonts/Barlow/Barlow-SemiBold.woff2') format('woff2'),
+    url('./fonts/Barlow/Barlow-SemiBold.woff') format('woff');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  src:
+    url('./fonts/Barlow/Barlow-Bold.woff2') format('woff2'),
+    url('./fonts/Barlow/Barlow-Bold.woff') format('woff');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
 
 :root {
   color-scheme: light;
@@ -23,7 +70,7 @@ body {
 h1,
 h2,
 h3 {
-  font-family: 'Aldrich', 'Barlow', 'Segoe UI', sans-serif;
+  font-family: 'Russo One', 'Barlow', 'Segoe UI', sans-serif;
 }
 
 #app {
