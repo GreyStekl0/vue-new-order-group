@@ -8,10 +8,16 @@
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
   font-family: 'Barlow', 'Segoe UI', sans-serif;
   background: var(--nog-bg);
   color: var(--nog-text);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,

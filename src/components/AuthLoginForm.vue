@@ -87,11 +87,14 @@ export default {
       }
 
       this.submitting = true
-      await this.authStore.login({
-        email: this.email,
-        password: this.password,
-      })
-      this.submitting = false
+      try {
+        await this.authStore.login({
+          email: this.email,
+          password: this.password,
+        })
+      } finally {
+        this.submitting = false
+      }
 
       if (this.authStore.isAuthenticated) {
         this.submitAttempted = false
@@ -151,7 +154,6 @@ export default {
       <button
         type="button"
         class="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer rounded-lg border-0 bg-transparent p-[0.35rem] text-(--nog-text-subtle) transition-colors hover:bg-(--nog-form-hover-surface) hover:text-(--nog-accent)"
-        :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
         @click="togglePassword"
       >
         <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />

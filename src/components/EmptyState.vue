@@ -21,14 +21,8 @@ const props = defineProps({
   >
     <div class="flex flex-col items-center px-6 py-16 text-center sm:px-10">
       <div class="relative mb-8 flex h-32 w-32 items-center justify-center">
-        <span
-          class="absolute h-24 w-24 rounded-full bg-(--nog-accent) opacity-20 animate-ping"
-          aria-hidden="true"
-        />
-        <span
-          class="absolute h-28 w-28 rounded-full border border-(--nog-border) bg-(--nog-surface-soft)"
-          aria-hidden="true"
-        />
+        <span class="absolute h-24 w-24 rounded-full bg-(--nog-accent) opacity-20 animate-ping" />
+        <span class="absolute h-28 w-28 rounded-full border border-(--nog-border) bg-(--nog-surface-soft)" />
         <i :class="[props.icon, 'relative z-10 text-5xl! leading-none text-(--nog-accent)']" />
       </div>
 

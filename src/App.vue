@@ -6,6 +6,24 @@ import PrimeButton from 'primevue/button'
 import AuthLoginForm from '@/components/AuthLoginForm.vue'
 import { useAuthStore } from '@/stores/authStore'
 
+const MENUBAR_PT = Object.freeze({
+  rootList: {
+    class: 'gap-[0.4rem]',
+  },
+  end: {
+    class: 'max-[760px]:mt-2 max-[760px]:w-full',
+  },
+})
+
+const LOGIN_DIALOG_PT = Object.freeze({
+  header: {
+    class: 'px-[1.2rem] pt-4 pb-[0.35rem]',
+  },
+  content: {
+    class: 'px-[1.2rem] pt-[0.6rem] pb-[1.2rem]',
+  },
+})
+
 export default {
   components: {
     Menubar,
@@ -18,6 +36,8 @@ export default {
       authStore: useAuthStore(),
       showLoginModal: false,
       pendingRedirect: '',
+      menubarPt: MENUBAR_PT,
+      loginDialogPt: LOGIN_DIALOG_PT,
       menuItems: [
         {
           label: 'Главная',
@@ -46,26 +66,6 @@ export default {
     },
     accountTitle() {
       return this.user && this.user.name ? this.user.name : 'Аккаунт'
-    },
-    menubarPt() {
-      return {
-        rootList: {
-          class: 'gap-[0.4rem]',
-        },
-        end: {
-          class: 'max-[760px]:mt-2 max-[760px]:w-full',
-        },
-      }
-    },
-    loginDialogPt() {
-      return {
-        header: {
-          class: 'px-[1.2rem] pt-4 pb-[0.35rem]',
-        },
-        content: {
-          class: 'px-[1.2rem] pt-[0.6rem] pb-[1.2rem]',
-        },
-      }
     },
   },
   methods: {
@@ -129,11 +129,10 @@ export default {
         :pt="menubarPt"
         class="!rounded-[0.95rem] !border !border-(--nog-border) !bg-(--nog-surface) !px-[0.65rem] !py-[0.45rem] !shadow-[0_12px_26px_rgba(16,36,29,0.08)]"
       >
-        <template #item="{ item, props }">
+        <template #item="{ item }">
           <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
             <a
               :href="routerProps.href"
-              v-bind="props.action"
               :class="[
                 'inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)',
                 routerProps.isActive
@@ -141,7 +140,6 @@ export default {
                   : '',
               ]"
               @click="routerProps.navigate"
-              @keydown.enter.space="routerProps.navigate"
             >
               <i v-if="item.icon" :class="[item.icon, 'text-[0.9rem]']" />
               <span>{{ item.label }}</span>
@@ -152,7 +150,6 @@ export default {
             v-else
             :href="item.url"
             :target="item.target"
-            v-bind="props.action"
             class="inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)"
           >
             <i v-if="item.icon" :class="[item.icon, 'text-[0.9rem]']" />
