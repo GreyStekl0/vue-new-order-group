@@ -114,7 +114,7 @@ export default {
   <div
     class="min-h-screen bg-[radial-gradient(100%_200%_at_100%_0%,var(--nog-bg-gradient-top)_0%,transparent_45%),linear-gradient(180deg,var(--nog-bg-gradient-bottom)_0%,var(--nog-bg)_100%)] p-[clamp(1rem,2vw,2rem)] text-(--nog-text)"
   >
-    <header class="mx-auto max-w-[1240px]">
+    <header class="mx-auto max-w-310">
       <div class="mb-4">
         <p
           class="inline-flex items-center gap-[0.45rem] rounded-full bg-(--nog-accent) px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-(--nog-surface)"
@@ -127,7 +127,7 @@ export default {
       <Menubar
         :model="menuItems"
         :pt="menubarPt"
-        class="!rounded-[0.95rem] !border !border-(--nog-border) !bg-(--nog-surface) !px-[0.65rem] !py-[0.45rem] !shadow-[0_12px_26px_rgba(16,36,29,0.08)]"
+        class="rounded-[0.95rem]! border! border-(--nog-border)! bg-(--nog-surface)! px-[0.65rem]! py-[0.45rem]! shadow-[0_12px_26px_rgba(16,36,29,0.08)]!"
       >
         <template #item="{ item }">
           <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
@@ -136,7 +136,7 @@ export default {
               :class="[
                 'inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)',
                 routerProps.isActive
-                  ? '!bg-(--nog-accent) !text-(--nog-surface) hover:!bg-(--nog-accent-strong) hover:!text-(--nog-surface)'
+                  ? 'bg-(--nog-accent)! text-(--nog-surface)! hover:bg-(--nog-accent-strong)! hover:text-(--nog-surface)!'
                   : '',
               ]"
               @click="routerProps.navigate"
@@ -176,7 +176,7 @@ export default {
               label="Войти"
               icon="pi pi-sign-in"
               size="small"
-              class="!rounded-full !border !border-(--nog-accent) !bg-(--nog-accent) !px-[0.8rem] !py-[0.42rem] hover:!border-(--nog-accent-strong) hover:!bg-(--nog-accent-strong)"
+              class="rounded-full! border! border-(--nog-accent)! bg-(--nog-accent)! px-[0.8rem]! py-[0.42rem]! hover:border-(--nog-accent-strong)! hover:bg-(--nog-accent-strong)!"
               @click="openLoginModal"
             />
 
@@ -186,7 +186,7 @@ export default {
               icon="pi pi-sign-out"
               text
               size="small"
-              class="!rounded-full !px-[0.8rem] !py-[0.42rem] !text-(--nog-accent)"
+              class="rounded-full! px-[0.8rem]! py-[0.42rem]! text-(--nog-accent)!"
               @click="logout"
             />
           </div>
@@ -194,9 +194,9 @@ export default {
       </Menubar>
     </header>
 
-    <main class="mx-auto mt-4 max-w-[1240px]">
+    <main class="mx-auto mt-4 max-w-310">
       <section
-        class="min-h-[500px] rounded-2xl border border-(--nog-border) bg-(--nog-surface) p-[clamp(1rem,2vw,1.75rem)] shadow-[0_18px_34px_rgba(16,36,29,0.08)]"
+        class="min-h-125 rounded-2xl border border-(--nog-border) bg-(--nog-surface) p-[clamp(1rem,2vw,1.75rem)] shadow-[0_18px_34px_rgba(16,36,29,0.08)]"
       >
         <router-view v-slot="{ Component }">
           <transition
