@@ -1,6 +1,4 @@
-@import './base.css';
 @import 'tailwindcss';
-@import './common.css';
 
 @font-face {
   font-family: 'Russo One';
@@ -50,8 +48,224 @@
   font-display: swap;
 }
 
+@layer base {
+  :root {
+    --vt-c-white: #ffffff;
+    --vt-c-white-soft: #f8f8f8;
+    --vt-c-white-mute: #f2f2f2;
+    --vt-c-black: #181818;
+    --vt-c-black-soft: #222222;
+    --vt-c-black-mute: #282828;
+    --vt-c-indigo: #2c3e50;
+    --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+    --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+    --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+    --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+    --vt-c-text-light-1: var(--vt-c-indigo);
+    --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+    --vt-c-text-dark-1: var(--vt-c-white);
+    --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+    --color-background: var(--vt-c-white);
+    --color-background-soft: var(--vt-c-white-soft);
+    --color-background-mute: var(--vt-c-white-mute);
+    --color-border: var(--vt-c-divider-light-2);
+    --color-border-hover: var(--vt-c-divider-light-1);
+    --color-heading: var(--vt-c-text-light-1);
+    --color-text: var(--vt-c-text-light-1);
+    --section-gap: 160px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: var(--vt-c-black);
+      --color-background-soft: var(--vt-c-black-soft);
+      --color-background-mute: var(--vt-c-black-mute);
+      --color-border: var(--vt-c-divider-dark-2);
+      --color-border-hover: var(--vt-c-divider-dark-1);
+      --color-heading: var(--vt-c-text-dark-1);
+      --color-text: var(--vt-c-text-dark-2);
+    }
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: normal;
+  }
+}
+
 :root {
   color-scheme: light;
+
+  --nog-bg: #f3f7f4;
+  --nog-surface: #ffffff;
+  --nog-surface-soft: #f8fbf9;
+  --nog-text: #10241d;
+  --nog-text-subtle: #3f544d;
+  --nog-text-lead: #3e524b;
+  --nog-text-copy: #455952;
+  --nog-text-copy-soft: #536760;
+  --nog-text-strong: #173f31;
+  --nog-border: #d4e3dc;
+  --nog-border-soft: #d7e3dd;
+  --nog-border-soft-strong: #d5e1db;
+  --nog-accent: #174735;
+  --nog-accent-strong: #0f3024;
+  --nog-accent-soft: #edf6f2;
+  --nog-accent-surface: #f9fcfa;
+  --nog-bg-gradient-top: #e6f2ec;
+  --nog-bg-gradient-bottom: #f8fcfa;
+  --nog-hover-surface: #ecf4f0;
+  --nog-online-border: #afc8be;
+  --nog-form-input-border: #9fb8ad;
+  --nog-form-input-border-soft: #d7e5de;
+  --nog-form-input-focus: #7ea796;
+  --nog-form-hover-surface: #edf5f1;
+  --nog-danger-border: #b74747;
+  --nog-danger-text: #8f2525;
+  --nog-danger-surface: #f8e9e9;
+
+  --nog-font-family-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+
+  --nog-font-weight-medium: 500;
+  --nog-font-weight-semibold: 600;
+  --nog-font-weight-bold: 700;
+
+  --nog-font-size-2xs: 0.75rem;
+  --nog-font-size-sm: 0.9rem;
+  --nog-font-size-base: 1rem;
+  --nog-font-size-button: 0.95rem;
+  --nog-font-size-user-pill: 0.78rem;
+  --nog-font-size-section-title: 1.5rem;
+  --nog-font-size-login-intro: 0.9rem;
+  --nog-font-size-login-label: 0.8rem;
+  --nog-font-size-login-alert: 0.82rem;
+  --nog-font-size-empty-icon: 3rem;
+  --nog-font-size-empty-title: 2.25rem;
+  --nog-font-size-empty-title-sm: 1.875rem;
+  --nog-font-size-empty-description: 1.25rem;
+  --nog-font-size-empty-description-sm: 1.125rem;
+  --nog-font-size-empty-footer: 0.875rem;
+  --nog-font-size-empty-footer-sm: 0.75rem;
+  --nog-font-size-home-title: clamp(2rem, 5vw, 3.5rem);
+  --nog-font-size-home-lead: 1.25rem;
+  --nog-font-size-home-subtitle: 1.5rem;
+  --nog-font-size-home-copy: 1.1rem;
+  --nog-font-size-home-benefits-title: 1.15rem;
+  --nog-font-size-home-benefit-icon: 1.05rem;
+
+  --nog-letter-spacing-tight: 0.08em;
+  --nog-letter-spacing-normal: -0.025em;
+  --nog-letter-spacing-wide: 0.2em;
+
+  --nog-line-height-normal: 1.5;
+  --nog-line-height-relaxed: 1.625;
+  --nog-line-height-tight: 1.25;
+  --nog-line-height-home-title: 1.15;
+  --nog-line-height-comfortable: 1.4;
+
+  --nog-radius-control: 0.5rem;
+  --nog-radius-card: 0.8rem;
+  --nog-radius-alert: 0.6rem;
+  --nog-radius-input: 0.72rem;
+  --nog-radius-nav-link: 0.65rem;
+  --nog-radius-menubar: 0.95rem;
+  --nog-radius-surface: 1rem;
+  --nog-radius-pill: 9999px;
+
+  --nog-duration-fast: 0.2s;
+  --nog-duration-ping: 1s;
+
+  --nog-shadow-card-soft: 0 1px 2px rgba(16, 36, 29, 0.08);
+  --nog-shadow-menubar: 0 12px 26px rgba(16, 36, 29, 0.08);
+  --nog-shadow-surface: 0 18px 34px rgba(16, 36, 29, 0.08);
+
+  --nog-border-width-strong: 3px;
+  --nog-focus-ring-width: 0.2rem;
+  --nog-focus-ring-soft: rgba(23, 71, 53, 0.15);
+  --nog-color-success: #22c55e;
+
+  --nog-size-empty-icon-stack: 8rem;
+  --nog-size-empty-pulse: 6rem;
+  --nog-size-empty-ring: 7rem;
+  --nog-size-empty-description-max-width: 48rem;
+  --nog-main-surface-min-height: 31.25rem;
+
+  --nog-space-shell-padding: clamp(1rem, 2vw, 2rem);
+  --nog-space-main-offset: 1rem;
+  --nog-space-content-padding: clamp(1rem, 2vw, 1.75rem);
+  --nog-space-menubar-end-offset: 0.5rem;
+  --nog-space-menubar-list-gap: 0.4rem;
+  --nog-space-menubar-padding-x: 0.65rem;
+  --nog-space-menubar-padding-y: 0.45rem;
+  --nog-space-dialog-header-top: 1rem;
+  --nog-space-dialog-header-x: 1.2rem;
+  --nog-space-dialog-header-bottom: 0.35rem;
+  --nog-space-dialog-content-top: 0.6rem;
+  --nog-space-dialog-content-x: 1.2rem;
+  --nog-space-dialog-content-bottom: 1.2rem;
+
+  --nog-space-inline-gap-xs: 0.5rem;
+  --nog-space-inline-gap-sm: 0.45rem;
+  --nog-space-inline-gap-base: 0.75rem;
+  --nog-space-inline-gap-md: 0.55rem;
+
+  --nog-space-brand-offset: 1rem;
+  --nog-space-brand-badge-x: 0.75rem;
+  --nog-space-brand-badge-y: 0.25rem;
+  --nog-space-nav-link-x: 0.75rem;
+  --nog-space-nav-link-y: 0.52rem;
+  --nog-space-user-pill-x: 0.75rem;
+  --nog-space-user-pill-y: 0.35rem;
+  --nog-space-button-x: 0.8rem;
+  --nog-space-button-y: 0.42rem;
+
+  --nog-space-login-intro-offset: 0.8rem;
+  --nog-space-login-label-offset: 0.35rem;
+  --nog-space-login-password-label-offset: 0.75rem;
+  --nog-space-login-input-x: 0.75rem;
+  --nog-space-login-input-y: 0.62rem;
+  --nog-space-login-input-password-right: 2.5rem;
+  --nog-space-login-password-toggle-right: 0.25rem;
+  --nog-space-login-password-toggle-padding: 0.35rem;
+  --nog-space-login-alert-offset: 0.35rem;
+  --nog-space-login-general-alert-offset: 0.8rem;
+  --nog-space-login-alert-x: 0.5rem;
+  --nog-space-login-alert-y: 0.35rem;
+  --nog-space-login-submit-offset: 0.95rem;
+  --nog-space-login-submit-x: 0.9rem;
+  --nog-space-login-submit-y: 0.7rem;
+
+  --nog-space-empty-offset: 2rem;
+  --nog-space-empty-body-y: 4rem;
+  --nog-space-empty-body-x: 2.5rem;
+  --nog-space-empty-body-x-sm: 1.5rem;
+  --nog-space-empty-icon-offset: 2rem;
+  --nog-space-empty-description-offset: 1rem;
+  --nog-space-empty-footer-row-gap: 0.5rem;
+  --nog-space-empty-footer-column-gap: 2rem;
+  --nog-space-empty-footer-x: 1.5rem;
+  --nog-space-empty-footer-y: 1rem;
+
+  --nog-space-home-lead-offset: 1.5rem;
+  --nog-space-home-separator-offset: 2rem;
+  --nog-space-home-copy-offset: 0.8rem;
+  --nog-space-home-benefits-title-offset: 1.35rem;
+  --nog-space-home-benefits-list-offset: 0.75rem;
+  --nog-space-home-benefits-item-gap: 1.1rem;
+
+  --nog-space-region-grid-offset: 1.1rem;
+  --nog-space-region-grid-gap: 0.7rem;
+  --nog-space-region-card-x: 0.9rem;
+  --nog-space-region-card-y: 0.75rem;
+
+  --nog-space-polling-grid-offset: 1rem;
+  --nog-space-polling-grid-gap: 0.75rem;
+  --nog-space-polling-card-padding: 0.85rem;
+  --nog-space-polling-status-offset: 0.5rem;
 }
 
 body {

@@ -5,54 +5,129 @@ export default {
 </script>
 
 <template>
-  <section>
-    <h1 class="m-0 text-[clamp(2rem,5vw,3.5rem)] leading-[1.15] text-balance">
+  <section class="home-view">
+    <h1 class="home-view__title">
       Не захватывайте трон. Пусть они сами вас туда посадят
     </h1>
 
-    <p class="mt-6 text-[1.25rem] text-(--nog-text-lead)">
+    <p class="home-view__lead">
       Времена лазерных пушек и гигантских роботов ушли в прошлое. Сегодня миром правят рейтинги,
       бюллетени и общественное мнение. New Order Group превращает вашу жажду господства в легитимный
       политический мандат.
     </p>
 
-    <hr class="my-8 border-0 border-t-[3px] border-t-(--nog-accent) opacity-70" />
+    <hr class="home-view__separator" />
 
-    <h2 class="m-0 text-2xl font-bold leading-[1.4] text-(--nog-accent)">
+    <h2 class="home-view__subtitle">
       New Order Group — ваш оператор управляемой демократии.
     </h2>
 
-    <p class="mt-[0.8rem] text-[1.1rem] text-(--nog-text-copy)">
+    <p class="home-view__copy">
       Герои могут остановить армию клонов, но они бессильны против грамотно составленного протокола
       избирательной комиссии. Мы предлагаем комплексные решения для современных антагонистов: от
       дискредитации оппонентов до «корректировки» финальных протоколов. Мы не нарушаем правила — мы
       пишем их заново под вашу диктовку.
     </p>
 
-    <h3 class="mt-[1.35rem] text-[1.15rem] leading-tight">Ключевые преимущества</h3>
+    <h3 class="home-view__benefits-title">Ключевые преимущества</h3>
 
-    <ul class="mt-3 list-none space-y-[1.1rem] p-0 text-(--nog-text-copy)">
-      <li class="flex items-start gap-3">
-        <i class="pi pi-user text-[1.05rem] text-(--nog-accent)" />
-        <p class="m-0 leading-normal">
-          <span class="font-bold text-(--nog-text-strong)">Адаптация имиджа:</span>
+    <ul class="home-view__benefits-list">
+      <li class="home-view__benefit-item">
+        <i class="pi pi-user home-view__benefit-icon" />
+        <p class="home-view__benefit-text">
+          <span class="home-view__benefit-label">Адаптация имиджа:</span>
           Превращаем «Безумного Ученого» в «Технократа-визионера».
         </p>
       </li>
-      <li class="flex items-start gap-3">
-        <i class="pi pi-users text-[1.05rem] text-(--nog-accent)" />
-        <p class="m-0 leading-normal">
-          <span class="font-bold text-(--nog-text-strong)">Работа с электоратом:</span>
+      <li class="home-view__benefit-item">
+        <i class="pi pi-users home-view__benefit-icon" />
+        <p class="home-view__benefit-text">
+          <span class="home-view__benefit-label">Работа с электоратом:</span>
           Подкуп, запугивание и нейролингвистическое программирование в промышленных масштабах.
         </p>
       </li>
-      <li class="flex items-start gap-3">
-        <i class="pi pi-check-circle text-[1.05rem] text-(--nog-accent)" />
-        <p class="m-0 leading-normal">
-          <span class="font-bold text-(--nog-text-strong)">Гарантия результата:</span>
+      <li class="home-view__benefit-item">
+        <i class="pi pi-check-circle home-view__benefit-icon" />
+        <p class="home-view__benefit-text">
+          <span class="home-view__benefit-label">Гарантия результата:</span>
           Если вы не выиграете выборы, мы устроим переворот бесплатно.
         </p>
       </li>
     </ul>
   </section>
 </template>
+
+<style scoped>
+.home-view__title {
+  margin: 0;
+  font-size: var(--nog-font-size-home-title);
+  line-height: var(--nog-line-height-home-title);
+  text-wrap: balance;
+}
+
+.home-view__lead {
+  margin-top: var(--nog-space-home-lead-offset);
+  margin-bottom: 0;
+  color: var(--nog-text-lead);
+  font-size: var(--nog-font-size-home-lead);
+}
+
+.home-view__separator {
+  margin: var(--nog-space-home-separator-offset) 0;
+  border: 0;
+  border-top: var(--nog-border-width-strong) solid var(--nog-accent);
+  opacity: 0.7;
+}
+
+.home-view__subtitle {
+  margin: 0;
+  color: var(--nog-accent);
+  font-size: var(--nog-font-size-home-subtitle);
+  font-weight: var(--nog-font-weight-bold);
+  line-height: var(--nog-line-height-comfortable);
+}
+
+.home-view__copy {
+  margin-top: var(--nog-space-home-copy-offset);
+  margin-bottom: 0;
+  color: var(--nog-text-copy);
+  font-size: var(--nog-font-size-home-copy);
+}
+
+.home-view__benefits-title {
+  margin-top: var(--nog-space-home-benefits-title-offset);
+  margin-bottom: 0;
+  font-size: var(--nog-font-size-home-benefits-title);
+  line-height: var(--nog-line-height-tight);
+}
+
+.home-view__benefits-list {
+  margin: var(--nog-space-home-benefits-list-offset) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--nog-text-copy);
+  display: grid;
+  gap: var(--nog-space-home-benefits-item-gap);
+}
+
+.home-view__benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nog-space-inline-gap-base);
+}
+
+.home-view__benefit-icon {
+  color: var(--nog-accent);
+  font-size: var(--nog-font-size-home-benefit-icon);
+}
+
+.home-view__benefit-text {
+  margin: 0;
+  line-height: var(--nog-line-height-normal);
+}
+
+.home-view__benefit-label {
+  color: var(--nog-text-strong);
+  font-weight: var(--nog-font-weight-bold);
+}
+</style>

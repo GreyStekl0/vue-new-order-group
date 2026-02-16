@@ -20,30 +20,57 @@ export default {
 </script>
 
 <template>
-  <section>
-    <header>
-      <h2 class="m-0 flex items-center gap-[0.55rem] text-2xl">
-        <i class="pi pi-map" />
+  <section class="region-view">
+    <header class="region-view__header">
+      <h2 class="region-view__title">
+        <i class="pi pi-map region-view__title-icon" />
         Регионы
       </h2>
     </header>
 
-    <div v-if="hasRegions" class="mt-[1.1rem] grid gap-[0.7rem]">
-      <article
-        v-for="region in regions"
-        :key="region.id"
-        class="rounded-[0.8rem] border border-(--nog-border-soft) bg-(--nog-accent-surface) px-[0.9rem] py-3"
-      >
-        <strong class="text-(--nog-text-strong)">{{ region.name }}</strong>
+    <div v-if="hasRegions" class="region-view__grid">
+      <article v-for="region in regions" :key="region.id" class="region-view__card">
+        <strong class="region-view__name">{{ region.name }}</strong>
       </article>
     </div>
 
     <EmptyState
       v-else
-      class="mt-8"
+      class="region-view__empty"
       icon="pi pi-inbox"
       title="Глобальная карта чиста"
       description="Центр управления ожидает подтверждения новых целей. Модуль геополитического влияния находится в режиме пассивного мониторинга."
     />
   </section>
 </template>
+
+<style scoped>
+.region-view__title {
+  display: flex;
+  align-items: center;
+  gap: var(--nog-space-inline-gap-md);
+  margin: 0;
+  font-size: var(--nog-font-size-section-title);
+}
+
+.region-view__grid {
+  display: grid;
+  gap: var(--nog-space-region-grid-gap);
+  margin-top: var(--nog-space-region-grid-offset);
+}
+
+.region-view__card {
+  border: 1px solid var(--nog-border-soft);
+  border-radius: var(--nog-radius-card);
+  background: var(--nog-accent-surface);
+  padding: var(--nog-space-region-card-y) var(--nog-space-region-card-x);
+}
+
+.region-view__name {
+  color: var(--nog-text-strong);
+}
+
+.region-view__empty {
+  margin-top: var(--nog-space-empty-offset);
+}
+</style>

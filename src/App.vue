@@ -9,19 +9,19 @@ import { useAuthStore } from '@/stores/authStore'
 
 const MENUBAR_PT = Object.freeze({
   rootList: {
-    class: 'gap-[0.4rem]',
+    class: 'app-menubar-list',
   },
   end: {
-    class: 'max-[760px]:mt-2 max-[760px]:w-full',
+    class: 'app-menubar-end-slot',
   },
 })
 
 const LOGIN_DIALOG_PT = Object.freeze({
   header: {
-    class: 'px-[1.2rem] pt-4 pb-[0.35rem]',
+    class: 'app-login-dialog-header',
   },
   content: {
-    class: 'px-[1.2rem] pt-[0.6rem] pb-[1.2rem]',
+    class: 'app-login-dialog-content',
   },
 })
 
@@ -116,62 +116,40 @@ export default {
 </script>
 
 <template>
-  <div
-    class="min-h-screen bg-[radial-gradient(100%_200%_at_100%_0%,var(--nog-bg-gradient-top)_0%,transparent_45%),linear-gradient(180deg,var(--nog-bg-gradient-bottom)_0%,var(--nog-bg)_100%)] p-[clamp(1rem,2vw,2rem)] text-(--nog-text)"
-  >
-    <header class="mx-auto max-w-310">
-      <div class="mb-4">
-        <p
-          class="inline-flex items-center gap-[0.45rem] rounded-full bg-(--nog-accent) px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-(--nog-surface)"
-        >
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="app-brand-wrap">
+        <p class="app-brand-badge">
           <i class="pi pi-shield" />
           new order group
         </p>
       </div>
 
-      <Menubar
-        :model="menuItems"
-        :pt="menubarPt"
-        class="rounded-[0.95rem]! border! border-(--nog-border)! bg-(--nog-surface)! px-[0.65rem]! py-[0.45rem]! shadow-[0_12px_26px_rgba(16,36,29,0.08)]!"
-      >
+      <Menubar :model="menuItems" :pt="menubarPt" class="app-menubar">
         <template #item="{ item }">
           <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
             <a
               :href="routerProps.href"
               :class="[
-                'inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)',
-                routerProps.isActive
-                  ? 'bg-(--nog-accent)! text-(--nog-surface)! hover:bg-(--nog-accent-strong)! hover:text-(--nog-surface)!'
-                  : '',
+                'app-nav-link',
+                routerProps.isActive ? 'app-nav-link--active' : '',
               ]"
               @click="routerProps.navigate"
             >
-              <i v-if="item.icon" :class="[item.icon, 'text-[0.9rem]']" />
+              <i v-if="item.icon" :class="[item.icon, 'app-nav-icon']" />
               <span>{{ item.label }}</span>
             </a>
           </router-link>
 
-          <a
-            v-else
-            :href="item.url"
-            :target="item.target"
-            class="inline-flex items-center gap-[0.45rem] rounded-[0.65rem] px-3 py-[0.52rem] font-semibold text-(--nog-text) no-underline transition-all duration-200 hover:bg-(--nog-hover-surface) hover:text-(--nog-accent)"
-          >
-            <i v-if="item.icon" :class="[item.icon, 'text-[0.9rem]']" />
+          <a v-else :href="item.url" :target="item.target" class="app-nav-link">
+            <i v-if="item.icon" :class="[item.icon, 'app-nav-icon']" />
             <span>{{ item.label }}</span>
           </a>
         </template>
 
         <template #end>
-          <div class="inline-flex items-center gap-[0.55rem] max-[760px]:w-full max-[760px]:justify-between">
-            <p
-              class="m-0 inline-flex items-center gap-2 rounded-full border border-(--nog-border) px-3 py-[0.35rem] text-[0.78rem] font-semibold text-(--nog-text-subtle)"
-              :class="
-                isAuthenticated
-                  ? 'border-(--nog-online-border) bg-(--nog-accent-soft) text-(--nog-accent)'
-                  : ''
-              "
-            >
+          <div class="app-menubar-end-wrap">
+            <p class="app-user-pill" :class="isAuthenticated ? 'app-user-pill--online' : ''">
               <i :class="isAuthenticated ? 'pi pi-user' : 'pi pi-user-minus'" />
               <span>{{ isAuthenticated ? accountTitle : 'Гость' }}</span>
             </p>
@@ -181,7 +159,7 @@ export default {
               label="Войти"
               icon="pi pi-sign-in"
               size="small"
-              class="rounded-full! border! border-(--nog-accent)! bg-(--nog-accent)! px-[0.8rem]! py-[0.42rem]! hover:border-(--nog-accent-strong)! hover:bg-(--nog-accent-strong)!"
+              class="app-login-button"
               @click="openLoginModal"
             />
 
@@ -191,7 +169,7 @@ export default {
               icon="pi pi-sign-out"
               text
               size="small"
-              class="rounded-full! px-[0.8rem]! py-[0.42rem]! text-(--nog-accent)!"
+              class="app-logout-button"
               @click="logout"
             />
           </div>
@@ -199,18 +177,10 @@ export default {
       </Menubar>
     </header>
 
-    <main class="mx-auto mt-4 max-w-310">
-      <section
-        class="min-h-125 rounded-2xl border border-(--nog-border) bg-(--nog-surface) p-[clamp(1rem,2vw,1.75rem)] shadow-[0_18px_34px_rgba(16,36,29,0.08)]"
-      >
+    <main class="app-main">
+      <section class="app-content-surface">
         <router-view v-slot="{ Component }">
-          <transition
-            mode="out-in"
-            enter-active-class="transition-opacity duration-200 ease-[ease]"
-            leave-active-class="transition-opacity duration-200 ease-[ease]"
-            enter-from-class="opacity-0"
-            leave-to-class="opacity-0"
-          >
+          <transition name="route-fade" mode="out-in">
             <component :is="Component" />
           </transition>
         </router-view>
@@ -222,7 +192,7 @@ export default {
       modal
       header="Войти"
       :draggable="false"
-      :style="{ width: 'min(92vw, 28rem)' }"
+      class="app-login-dialog"
       :pt="loginDialogPt"
       @hide="onLoginModalHide"
     >
@@ -230,3 +200,181 @@ export default {
     </PrimeDialog>
   </div>
 </template>
+
+<style scoped>
+.app-shell {
+  --app-shell-background:
+    radial-gradient(100% 200% at 100% 0%, var(--nog-bg-gradient-top) 0%, transparent 45%),
+    linear-gradient(180deg, var(--nog-bg-gradient-bottom) 0%, var(--nog-bg) 100%);
+  min-height: 100vh;
+  color: var(--nog-text);
+  padding: var(--nog-space-shell-padding);
+  background: var(--app-shell-background);
+}
+
+.app-header,
+.app-main {
+  width: min(100%, 77.5rem);
+  margin-inline: auto;
+}
+
+.app-main {
+  margin-top: var(--nog-space-main-offset);
+}
+
+.app-brand-wrap {
+  margin-bottom: var(--nog-space-brand-offset);
+}
+
+.app-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nog-space-inline-gap-sm);
+  margin: 0;
+  padding: var(--nog-space-brand-badge-y) var(--nog-space-brand-badge-x);
+  border-radius: var(--nog-radius-pill);
+  background: var(--nog-accent);
+  color: var(--nog-surface);
+  font-size: var(--nog-font-size-2xs);
+  font-weight: var(--nog-font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--nog-letter-spacing-tight);
+}
+
+.app-menubar {
+  border: 1px solid var(--nog-border) !important;
+  border-radius: var(--nog-radius-menubar) !important;
+  background: var(--nog-surface) !important;
+  padding: var(--nog-space-menubar-padding-y) var(--nog-space-menubar-padding-x) !important;
+  box-shadow: var(--nog-shadow-menubar) !important;
+}
+
+.app-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nog-space-inline-gap-sm);
+  border-radius: var(--nog-radius-nav-link);
+  padding: var(--nog-space-nav-link-y) var(--nog-space-nav-link-x);
+  color: var(--nog-text);
+  font-weight: var(--nog-font-weight-semibold);
+  text-decoration: none;
+  transition:
+    color var(--nog-duration-fast) ease,
+    background-color var(--nog-duration-fast) ease;
+}
+
+.app-nav-link:hover {
+  background: var(--nog-hover-surface);
+  color: var(--nog-accent);
+}
+
+.app-nav-link--active {
+  background: var(--nog-accent) !important;
+  color: var(--nog-surface) !important;
+}
+
+.app-nav-link--active:hover {
+  background: var(--nog-accent-strong) !important;
+  color: var(--nog-surface) !important;
+}
+
+.app-nav-icon {
+  font-size: var(--nog-font-size-sm);
+}
+
+.app-menubar-end-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nog-space-inline-gap-md);
+}
+
+.app-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nog-space-inline-gap-xs);
+  margin: 0;
+  padding: var(--nog-space-user-pill-y) var(--nog-space-user-pill-x);
+  border: 1px solid var(--nog-border) !important;
+  border-radius: var(--nog-radius-pill);
+  color: var(--nog-text-subtle);
+  font-size: var(--nog-font-size-user-pill);
+  font-weight: var(--nog-font-weight-semibold);
+}
+
+.app-user-pill--online {
+  border-color: var(--nog-online-border) !important;
+  background: var(--nog-accent-soft);
+  color: var(--nog-accent);
+}
+
+.app-login-button {
+  border: 1px solid var(--nog-accent) !important;
+  border-radius: var(--nog-radius-pill) !important;
+  background: var(--nog-accent) !important;
+  padding: var(--nog-space-button-y) var(--nog-space-button-x) !important;
+}
+
+.app-login-button:hover {
+  border-color: var(--nog-accent-strong) !important;
+  background: var(--nog-accent-strong) !important;
+}
+
+.app-logout-button {
+  border-radius: var(--nog-radius-pill) !important;
+  color: var(--nog-accent) !important;
+  padding: var(--nog-space-button-y) var(--nog-space-button-x) !important;
+}
+
+.app-content-surface {
+  min-height: var(--nog-main-surface-min-height);
+  border: 1px solid var(--nog-border);
+  border-radius: var(--nog-radius-surface);
+  background: var(--nog-surface);
+  padding: var(--nog-space-content-padding);
+  box-shadow: var(--nog-shadow-surface);
+}
+
+.route-fade-enter-active,
+.route-fade-leave-active {
+  transition: opacity var(--nog-duration-fast) ease;
+}
+
+.route-fade-enter-from,
+.route-fade-leave-to {
+  opacity: 0;
+}
+
+:deep(.app-menubar-list) {
+  gap: var(--nog-space-menubar-list-gap);
+}
+
+:deep(.app-menubar-end-slot) {
+  width: auto;
+}
+
+:deep(.app-login-dialog) {
+  width: min(92vw, 28rem);
+}
+
+:deep(.app-login-dialog-header) {
+  padding: var(--nog-space-dialog-header-top) var(--nog-space-dialog-header-x)
+    var(--nog-space-dialog-header-bottom);
+}
+
+:deep(.app-login-dialog-content) {
+  padding: var(--nog-space-dialog-content-top) var(--nog-space-dialog-content-x)
+    var(--nog-space-dialog-content-bottom);
+}
+
+@media (max-width: 760px) {
+  .app-menubar-end-wrap {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  :deep(.app-menubar-end-slot) {
+    width: 100%;
+    margin-top: var(--nog-space-menubar-end-offset);
+  }
+}
+</style>
