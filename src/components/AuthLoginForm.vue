@@ -4,6 +4,9 @@ import InputText from 'primevue/inputtext'
 import { useAuthStore } from '@/stores/authStore'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMAIL_SERVER_ERROR_PATTERN = /email|почт/i
+const PASSWORD_SERVER_ERROR_PATTERN = /password|парол/i
+const EMAIL_FORMAT_ERROR_DEBOUNCE_MS = 450
 
 export default {
   name: 'AuthLoginForm',
@@ -17,58 +20,106 @@ export default {
       showPassword: false,
       submitting: false,
       submitAttempted: false,
-      touched: {
-        email: false,
-        password: false,
-      },
+      emailFormatErrorReady: true,
+      emailFormatErrorTimeoutId: null,
       authStore: useAuthStore(),
     }
   },
+  beforeUnmount() {
+    this.clearEmailFormatErrorTimer()
+  },
   computed: {
     serverError() {
-      return this.authStore.errorMessage || ''
+      return this.authStore.errorMessage ? String(this.authStore.errorMessage).trim() : ''
     },
-    emailError() {
-      if (this.submitAttempted) {
-        if (!this.email) {
-          return 'Введите email'
-        }
-
-        if (!EMAIL_PATTERN.test(this.email)) {
-          return 'Введите корректный email'
-        }
+    emailFieldServerError() {
+      return EMAIL_SERVER_ERROR_PATTERN.test(this.serverError) ? this.serverError : ''
+    },
+    passwordFieldServerError() {
+      return PASSWORD_SERVER_ERROR_PATTERN.test(this.serverError) ? this.serverError : ''
+    },
+    generalServerError() {
+      if (!this.serverError) {
+        return ''
       }
 
-      if (this.serverError && /email|почт/i.test(this.serverError)) {
-        return this.serverError
+      if (this.emailFieldServerError || this.passwordFieldServerError) {
+        return ''
+      }
+
+      return this.serverError
+    },
+    emailError() {
+      if (!this.email) {
+        return this.submitAttempted ? 'Введите email' : ''
+      }
+
+      if (!EMAIL_PATTERN.test(this.email)) {
+        if (!this.emailFormatErrorReady) {
+          return ''
+        }
+
+        return 'Введите корректный email'
+      }
+
+      if (this.emailFieldServerError) {
+        return this.emailFieldServerError
       }
 
       return ''
     },
     passwordError() {
-      if (this.touched.password && !this.password) {
+      if (!this.submitAttempted) {
+        return ''
+      }
+
+      if (!this.password) {
         return 'Введите пароль'
       }
 
-      if (this.serverError && !/email|почт/i.test(this.serverError)) {
-        return this.serverError
+      if (this.passwordFieldServerError) {
+        return this.passwordFieldServerError
+      }
+
+      return ''
+    },
+    generalError() {
+      if (this.generalServerError) {
+        return this.generalServerError
       }
 
       return ''
     },
   },
   methods: {
+    clearEmailFormatErrorTimer() {
+      if (this.emailFormatErrorTimeoutId !== null) {
+        clearTimeout(this.emailFormatErrorTimeoutId)
+        this.emailFormatErrorTimeoutId = null
+      }
+    },
     clearServerError() {
       if (this.authStore.errorMessage) {
         this.authStore.errorMessage = ''
       }
     },
     onEmailInput() {
-      this.touched.email = true
       this.clearServerError()
+
+      if (!this.email || EMAIL_PATTERN.test(this.email)) {
+        this.emailFormatErrorReady = true
+        this.clearEmailFormatErrorTimer()
+        return
+      }
+
+      this.emailFormatErrorReady = false
+      this.clearEmailFormatErrorTimer()
+      this.emailFormatErrorTimeoutId = setTimeout(() => {
+        this.emailFormatErrorReady = true
+        this.emailFormatErrorTimeoutId = null
+      }, EMAIL_FORMAT_ERROR_DEBOUNCE_MS)
     },
     onPasswordInput() {
-      this.touched.password = true
       this.clearServerError()
     },
     togglePassword() {
@@ -79,8 +130,8 @@ export default {
     },
     async submit() {
       this.submitAttempted = true
-      this.touched.email = true
-      this.touched.password = true
+      this.emailFormatErrorReady = true
+      this.clearEmailFormatErrorTimer()
 
       if (this.hasClientErrors()) {
         return
@@ -110,6 +161,12 @@ export default {
   <form novalidate @submit.prevent="submit">
     <p class="mb-[0.8rem] mt-0 text-[0.9rem] text-(--nog-text-subtle)">
       Введите данные аккаунта new order group
+    </p>
+    <p
+      v-if="generalError"
+      class="mb-[0.8rem] rounded-[0.6rem] border border-(--nog-danger-border) bg-(--nog-danger-surface) px-2 py-[0.35rem] text-[0.82rem] text-(--nog-danger-text)"
+    >
+      {{ generalError }}
     </p>
 
     <label
