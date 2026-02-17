@@ -42,12 +42,6 @@ export default {
       return this.dataStore.regions_total
     },
   },
-  mounted() {
-    console.log('regions component MOUNTED!')
-    this.dataStore.get_regions()
-    this.dataStore.get_regions_total()
-    console.log('regions=', this.regions)
-  },
   methods: {
     onPageChange(event) {
       this.offset = event.first

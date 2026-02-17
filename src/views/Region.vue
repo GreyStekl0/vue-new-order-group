@@ -1,10 +1,66 @@
 <script>
 import Region from '@/components/Region.vue'
+import EmptyState from '@/components/EmptyState.vue'
+import AuthRequiredState from '@/components/AuthRequiredState.vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useDataStore } from '@/stores/dataStore'
 
 export default {
   name: 'RegionPageView',
   components: {
     Region,
+    EmptyState,
+    AuthRequiredState,
+  },
+  data() {
+    return {
+      authStore: useAuthStore(),
+      dataStore: useDataStore(),
+      isRegionLoading: false,
+    }
+  },
+  computed: {
+    isAuthenticated() {
+      return this.authStore.isAuthenticated
+    },
+    isAuthPending() {
+      return Boolean(this.authStore.token) && !this.authStore.isAuthenticated
+    },
+    hasRegions() {
+      return this.dataStore.regions.length > 0
+    },
+    showGuestState() {
+      return !this.isAuthPending && !this.isAuthenticated
+    },
+    showRegionTable() {
+      return this.isAuthenticated && this.hasRegions
+    },
+    showEmptyState() {
+      return this.isAuthenticated && !this.isRegionLoading && !this.hasRegions
+    },
+  },
+  mounted() {
+    if (this.isAuthenticated) {
+      this.loadRegions()
+    }
+  },
+  watch: {
+    isAuthenticated(value) {
+      if (value) {
+        this.loadRegions()
+      }
+    },
+  },
+  methods: {
+    async loadRegions() {
+      this.isRegionLoading = true
+
+      try {
+        await Promise.all([this.dataStore.get_regions(), this.dataStore.get_regions_total()])
+      } finally {
+        this.isRegionLoading = false
+      }
+    },
   },
 }
 </script>
@@ -18,7 +74,19 @@ export default {
       </h2>
     </header>
 
-    <Region class="region-view__content" />
+    <AuthRequiredState v-if="showGuestState" class="region-view__state" />
+
+    <Region v-else-if="showRegionTable" class="region-view__content" />
+
+    <EmptyState
+      v-else-if="showEmptyState"
+      class="region-view__state"
+      icon="pi pi-map"
+      title="Регионы не найдены"
+      description="Сервер не вернул ни одной записи. Добавьте регионы в систему и повторите запрос."
+    />
+
+    <p v-else class="region-view__loading">Синхронизация данных...</p>
   </section>
 </template>
 
@@ -33,5 +101,14 @@ export default {
 
 .region-view__content {
   display: block;
+}
+
+.region-view__state {
+  margin-top: var(--nog-space-empty-offset);
+}
+
+.region-view__loading {
+  margin-top: var(--nog-space-region-grid-offset);
+  color: var(--nog-text-subtle);
 }
 </style>
