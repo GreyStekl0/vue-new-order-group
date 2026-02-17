@@ -11,11 +11,6 @@ export default {
       pollingStations: [],
     }
   },
-  computed: {
-    hasPollingStations() {
-      return this.pollingStations.length > 0
-    },
-  },
 }
 </script>
 
@@ -28,7 +23,7 @@ export default {
       </h2>
     </header>
 
-    <div v-if="hasPollingStations" class="polling-station-view__grid">
+    <div v-if="pollingStations.length" class="polling-station-view__grid">
       <article v-for="station in pollingStations" :key="station.id" class="polling-station-view__card">
         <h3 class="polling-station-view__name">{{ station.name }}</h3>
         <p class="polling-station-view__status">{{ station.status }}</p>

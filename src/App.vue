@@ -66,7 +66,7 @@ export default {
       return this.authStore.user
     },
     accountTitle() {
-      return this.user && this.user.name ? this.user.name : 'Аккаунт'
+      return this.user?.name || 'Аккаунт'
     },
   },
   methods: {
@@ -78,7 +78,7 @@ export default {
     },
     openLoginModal() {
       this.pendingRedirect = this.getCurrentFullPath()
-      this.authStore.errorMessage = ''
+      this.authStore.clearError()
       this.showLoginModal = true
     },
     onLoginSuccess() {
@@ -87,23 +87,21 @@ export default {
       const redirectTarget = this.pendingRedirect || currentFullPath
 
       this.pendingRedirect = ''
-      this.authStore.errorMessage = ''
+      this.authStore.clearError()
 
       if (currentFullPath !== redirectTarget) {
         appRouter.replace(redirectTarget)
       }
     },
     onLoginModalHide() {
-      this.authStore.errorMessage = ''
+      this.authStore.clearError()
     },
     handleExternalLoginOpen() {
       this.openLoginModal()
     },
   },
   mounted() {
-    const token = localStorage.getItem('token')
-    if (token) {
-      this.authStore.isAuthenticated = true
+    if (this.authStore.token) {
       this.authStore.getUser()
     }
 

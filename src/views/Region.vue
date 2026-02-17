@@ -11,11 +11,6 @@ export default {
       regions: [],
     }
   },
-  computed: {
-    hasRegions() {
-      return this.regions.length > 0
-    },
-  },
 }
 </script>
 
@@ -28,7 +23,7 @@ export default {
       </h2>
     </header>
 
-    <div v-if="hasRegions" class="region-view__grid">
+    <div v-if="regions.length" class="region-view__grid">
       <article v-for="region in regions" :key="region.id" class="region-view__card">
         <strong class="region-view__name">{{ region.name }}</strong>
       </article>

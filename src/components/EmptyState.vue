@@ -1,18 +1,21 @@
-<script setup>
-const props = defineProps({
-  title: {
-    type: String,
-    required: true,
+<script>
+export default {
+  name: 'EmptyState',
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      default: '',
+    },
+    icon: {
+      type: String,
+      default: 'pi pi-info-circle',
+    },
   },
-  description: {
-    type: String,
-    default: '',
-  },
-  icon: {
-    type: String,
-    default: 'pi pi-info-circle',
-  },
-})
+}
 </script>
 
 <template>
@@ -21,15 +24,15 @@ const props = defineProps({
       <div class="empty-state__icon-stack">
         <span class="empty-state__pulse" />
         <span class="empty-state__ring" />
-        <i :class="[props.icon, 'empty-state__icon']" />
+        <i :class="[icon, 'empty-state__icon']" />
       </div>
 
       <h3 class="empty-state__title">
-        {{ props.title }}
+        {{ title }}
       </h3>
 
-      <p v-if="props.description" class="empty-state__description">
-        {{ props.description }}
+      <p v-if="description" class="empty-state__description">
+        {{ description }}
       </p>
     </div>
 

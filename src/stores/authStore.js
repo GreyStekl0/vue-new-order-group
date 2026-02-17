@@ -3,99 +3,93 @@ import axios from 'axios'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
+function buildAuthHeaders(token) {
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+}
+
+function getErrorMessage(error) {
+  if (error?.response?.data?.message) {
+    return String(error.response.data.message)
+  }
+
+  if (error?.message) {
+    return String(error.message)
+  }
+
+  return 'Request failed'
+}
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null, // Данные пользователя
-    token: localStorage.getItem('token') || null, // Токен из localStorage
-    isAuthenticated: false, // Статус аутентификации
+    user: null,
+    token: localStorage.getItem('token') || null,
+    isAuthenticated: false,
     errorMessage: '',
   }),
   actions: {
-    async login(credentials) {
+    clearError() {
       this.errorMessage = ''
+    },
+    setSession(token, user = null) {
+      this.token = token
+      this.user = user
+      this.isAuthenticated = Boolean(token)
+
+      if (token) {
+        localStorage.setItem('token', token)
+      } else {
+        localStorage.removeItem('token')
+      }
+    },
+    clearSession() {
+      this.setSession(null, null)
+    },
+    async login(credentials) {
+      this.clearError()
+
       try {
         const response = await axios.post(`${backendUrl}/login`, credentials)
-
-        this.token = response.data.token
-        this.user = response.data.user
-        this.isAuthenticated = true
-        localStorage.setItem('token', response.data.token)
+        this.setSession(response.data.token, response.data.user || null)
       } catch (error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          this.errorMessage = error.response.data.message
-          console.log(error)
-        } else if (error.request) {
-          // The request was made but no response was received
-          // 'error.request' is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          this.errorMessage = error.message
-          console.log(error)
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log(error)
-        }
+        this.clearSession()
+        this.errorMessage = getErrorMessage(error)
       }
     },
     async getUser() {
-      this.errorMessage = ''
+      this.clearError()
+
+      if (!this.token) {
+        this.clearSession()
+        return
+      }
 
       try {
-        const response = await axios.get(`${backendUrl}/user`, {
-          headers: {
-            Authorization: 'Bearer ' + this.token,
-          },
-        })
-
+        const response = await axios.get(`${backendUrl}/user`, buildAuthHeaders(this.token))
         this.user = response.data
+        this.isAuthenticated = true
       } catch (error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          this.errorMessage = error.response.data.message
-          console.log(error)
-        } else if (error.request) {
-          // The request was made but no response was received
-          // 'error.request' is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          this.errorMessage = error.message
-          console.log(error)
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log(error)
-        }
+        this.clearSession()
+        this.errorMessage = getErrorMessage(error)
       }
     },
     async logout() {
+      this.clearError()
+
+      if (!this.token) {
+        this.clearSession()
+        return
+      }
+
       try {
-        await axios.post(`${backendUrl}/logout`, null, {
-          headers: {
-            Authorization: 'Bearer ' + this.token,
-          },
-        })
-
-        this.errorCode = 0
-        this.errorMessage = ''
-        this.token = null
-        this.user = null
-        this.isAuthenticated = false
-
-        // Удаляем токен из localStorage
-        localStorage.removeItem('token')
+        await axios.post(`${backendUrl}/logout`, null, buildAuthHeaders(this.token))
       } catch (error) {
-        if (error.response) {
-          this.errorCode = 1
-          this.errorMessage = error.response.data.message
-          console.log(error)
-        } else if (error.request) {
-          this.errorCode = 2
-          this.errorMessage = error.message
-          console.log(error)
-        } else {
-          this.errorCode = 3
-          console.log(error)
-        }
+        this.errorMessage = getErrorMessage(error)
+      } finally {
+        this.clearSession()
       }
     },
   },

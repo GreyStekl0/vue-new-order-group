@@ -1,41 +1,51 @@
-<script setup>
-import { computed, reactive } from 'vue'
+<script>
 import InputText from 'primevue/inputtext'
 
 import { useAuthStore } from '@/stores/authStore'
 
-const emit = defineEmits(['success'])
-const authStore = useAuthStore()
+export default {
+  name: 'AuthLoginForm',
+  components: {
+    InputText,
+  },
+  emits: ['success'],
+  data() {
+    return {
+      authStore: useAuthStore(),
+      email: '',
+      password: '',
+      showPassword: false,
+      submitting: false,
+    }
+  },
+  computed: {
+    serverError() {
+      return this.authStore.errorMessage ? String(this.authStore.errorMessage).trim() : ''
+    },
+  },
+  methods: {
+    clearServerError() {
+      this.authStore.clearError()
+    },
+    async submit() {
+      this.clearServerError()
 
-const state = reactive({
-  email: '',
-  password: '',
-  showPassword: false,
-  submitting: false,
-})
+      this.submitting = true
+      try {
+        await this.authStore.login({
+          email: String(this.email).trim(),
+          password: this.password,
+        })
+      } finally {
+        this.submitting = false
+      }
 
-const serverError = computed(() =>
-  authStore.errorMessage ? String(authStore.errorMessage).trim() : '',
-)
-
-function clearServerError() {
-  authStore.errorMessage = ''
-}
-
-async function submit() {
-  clearServerError()
-
-  state.submitting = true
-  try {
-    await authStore.login({ email: String(state.email).trim(), password: state.password })
-  } finally {
-    state.submitting = false
-  }
-
-  if (authStore.isAuthenticated) {
-    state.password = ''
-    emit('success')
-  }
+      if (this.authStore.isAuthenticated) {
+        this.password = ''
+        this.$emit('success')
+      }
+    },
+  },
 }
 </script>
 
@@ -51,7 +61,7 @@ async function submit() {
     <label class="auth-login-form__label" for="login-email">Email</label>
     <InputText
       id="login-email"
-      v-model.trim="state.email"
+      v-model.trim="email"
       type="email"
       required
       autocomplete="username"
@@ -66,22 +76,22 @@ async function submit() {
     <div class="auth-login-form__password-wrap">
       <InputText
         id="login-password"
-        v-model="state.password"
-        :type="state.showPassword ? 'text' : 'password'"
+        v-model="password"
+        :type="showPassword ? 'text' : 'password'"
         required
         autocomplete="current-password"
         class="auth-login-form__input auth-login-form__input--password"
         @input="clearServerError"
       />
-      <button type="button" class="auth-login-form__password-toggle" @click="state.showPassword = !state.showPassword">
-        <i :class="state.showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
+      <button type="button" class="auth-login-form__password-toggle" @click="showPassword = !showPassword">
+        <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
       </button>
     </div>
 
-    <button type="submit" class="auth-login-form__submit" :disabled="state.submitting">
-      <i v-if="state.submitting" class="pi pi-spinner pi-spin" />
+    <button type="submit" class="auth-login-form__submit" :disabled="submitting">
+      <i v-if="submitting" class="pi pi-spinner pi-spin" />
       <i v-else class="pi pi-sign-in" />
-      <span>{{ state.submitting ? 'Вход...' : 'Войти' }}</span>
+      <span>{{ submitting ? 'Вход...' : 'Войти' }}</span>
     </button>
   </form>
 </template>
