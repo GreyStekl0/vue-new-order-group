@@ -88,34 +88,14 @@ function normalizePaginationParams(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
   }
 }
 
-function normalizePaginatedResponse(payload, paginationParams) {
-  const list = Array.isArray(payload?.data)
-    ? payload.data
-    : Array.isArray(payload)
-      ? payload
-      : []
-  const payloadTotal = Number(payload?.total)
-  const payloadPage = Number(payload?.current_page)
-  const payloadPerpage = Number(payload?.per_page)
-  const payloadLastPage = Number(payload?.last_page)
-
-  const total = Number.isFinite(payloadTotal) ? payloadTotal : list.length
-  const perpage =
-    Number.isFinite(payloadPerpage) && payloadPerpage >= MIN_PERPAGE
-      ? payloadPerpage
-      : paginationParams.perpage
-  const page =
-    Number.isFinite(payloadPage) && payloadPage >= MIN_PAGE ? payloadPage : paginationParams.page
-  const last_page =
-    Number.isFinite(payloadLastPage) && payloadLastPage >= MIN_PAGE
-      ? payloadLastPage
-      : Math.max(MIN_PAGE, Math.ceil(total / perpage))
+function normalizePaginatedResponse(payload) {
+  const { data, total, current_page, per_page, last_page } = payload
 
   return {
-    list,
+    list: data,
     pagination: {
-      page,
-      perpage,
+      page: current_page,
+      perpage: per_page,
       total,
       last_page,
     },
@@ -195,9 +175,9 @@ export const useDataStore = defineStore('data', {
       return resource
     },
 
-    applyResourceResponse(resourceName, payload, paginationParams) {
+    applyResourceResponse(resourceName, payload) {
       const resource = this.getResourceConfig(resourceName)
-      const normalized = normalizePaginatedResponse(payload, paginationParams)
+      const normalized = normalizePaginatedResponse(payload)
 
       this[resource.listKey] = normalized.list
       this[resource.totalKey] = normalized.pagination.total
@@ -218,7 +198,7 @@ export const useDataStore = defineStore('data', {
           params: paginationParams,
         })
 
-        this.applyResourceResponse(resourceName, response.data, paginationParams)
+        this.applyResourceResponse(resourceName, response.data)
       } catch (error) {
         this.errorMessage = getErrorMessage(error)
         console.log(error)
