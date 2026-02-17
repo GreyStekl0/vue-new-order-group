@@ -2,13 +2,13 @@
   <div class="polling-station-table">
     <DataTable
       class="polling-station-table__datatable"
-      :value="pollingStations"
+      :value="rows"
       :lazy="true"
       :loading="dataStore.loading"
       :paginator="true"
       :rows="perpage"
       :rowsPerPageOptions="[2, 5, 10]"
-      :totalRecords="pollingStations_total"
+      :totalRecords="totalRecords"
       @page="onPageChange"
       responsive-layout="scroll"
       :first="offset"
@@ -36,18 +36,19 @@ export default {
     }
   },
   computed: {
-    pollingStations() {
-      return this.dataStore.pollingStations
+    rows() {
+      return this.dataStore.get_resource_list('pollingStations')
     },
-    pollingStations_total() {
-      return this.dataStore.pollingStations_total
+    totalRecords() {
+      return this.dataStore.get_resource_total('pollingStations') || 0
     },
   },
   methods: {
     onPageChange(event) {
       this.offset = event.first
       this.perpage = event.rows
-      this.dataStore.get_polling_stations(this.offset / this.perpage, this.perpage)
+      const page = (event.page ?? this.offset / this.perpage) + 1
+      this.dataStore.get_resource('pollingStations', page, this.perpage)
     },
   },
 }

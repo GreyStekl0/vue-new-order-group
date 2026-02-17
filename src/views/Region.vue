@@ -27,7 +27,7 @@ export default {
       return Boolean(this.authStore.token) && !this.authStore.isAuthenticated
     },
     hasRegions() {
-      return this.dataStore.regions.length > 0
+      return this.dataStore.get_resource_list('regions').length > 0
     },
     showGuestState() {
       return !this.isAuthPending && !this.isAuthenticated
@@ -56,7 +56,7 @@ export default {
       this.isRegionLoading = true
 
       try {
-        await Promise.all([this.dataStore.get_regions(), this.dataStore.get_regions_total()])
+        await this.dataStore.get_resource('regions', 1, 5)
       } finally {
         this.isRegionLoading = false
       }

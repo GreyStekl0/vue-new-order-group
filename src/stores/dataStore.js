@@ -3,29 +3,45 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
+const MIN_PAGE = 1
+const DEFAULT_PERPAGE = 5
+const MIN_PERPAGE = 1
+const MAX_PERPAGE = 100
 
 const resources = {
   candidates: {
-    listEndpoint: '/candidate',
-    totalEndpoint: '/candidates_total',
+    listEndpoint: '/candidates',
     listKey: 'candidates',
     totalKey: 'candidates_total',
+    paginationKey: 'candidates',
   },
   regions: {
-    listEndpoint: '/region',
-    totalEndpoint: '/regions_total',
+    listEndpoint: '/regions',
     listKey: 'regions',
     totalKey: 'regions_total',
+    paginationKey: 'regions',
   },
   pollingStations: {
-    listEndpoint: '/pollingstation',
-    totalEndpoint: '/pollingstations_total',
+    listEndpoint: '/polling-stations',
     listKey: 'pollingStations',
     totalKey: 'pollingStations_total',
+    paginationKey: 'pollingStations',
   },
 }
 
 function getErrorMessage(error) {
+  const validationErrors = error?.response?.data?.errors
+
+  if (validationErrors && typeof validationErrors === 'object') {
+    const firstValidationEntry = Object.values(validationErrors).find(
+      (entry) => Array.isArray(entry) && entry.length > 0,
+    )
+
+    if (firstValidationEntry?.[0]) {
+      return firstValidationEntry[0]
+    }
+  }
+
   if (error?.response?.data?.message) {
     return error.response.data.message
   }
@@ -49,6 +65,63 @@ function buildAuthHeaders(token) {
   }
 }
 
+function parseInteger(value, fallback) {
+  const parsedValue = Number.parseInt(value, 10)
+
+  if (!Number.isFinite(parsedValue)) {
+    return fallback
+  }
+
+  return parsedValue
+}
+
+function normalizePaginationParams(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+  const normalizedPage = Math.max(MIN_PAGE, parseInteger(page, MIN_PAGE))
+  const normalizedPerpage = Math.min(
+    MAX_PERPAGE,
+    Math.max(MIN_PERPAGE, parseInteger(perpage, DEFAULT_PERPAGE)),
+  )
+
+  return {
+    page: normalizedPage,
+    perpage: normalizedPerpage,
+  }
+}
+
+function normalizePaginatedResponse(payload, paginationParams) {
+  const list = Array.isArray(payload?.data)
+    ? payload.data
+    : Array.isArray(payload)
+      ? payload
+      : []
+  const payloadTotal = Number(payload?.total)
+  const payloadPage = Number(payload?.current_page)
+  const payloadPerpage = Number(payload?.per_page)
+  const payloadLastPage = Number(payload?.last_page)
+
+  const total = Number.isFinite(payloadTotal) ? payloadTotal : list.length
+  const perpage =
+    Number.isFinite(payloadPerpage) && payloadPerpage >= MIN_PERPAGE
+      ? payloadPerpage
+      : paginationParams.perpage
+  const page =
+    Number.isFinite(payloadPage) && payloadPage >= MIN_PAGE ? payloadPage : paginationParams.page
+  const last_page =
+    Number.isFinite(payloadLastPage) && payloadLastPage >= MIN_PAGE
+      ? payloadLastPage
+      : Math.max(MIN_PAGE, Math.ceil(total / perpage))
+
+  return {
+    list,
+    pagination: {
+      page,
+      perpage,
+      total,
+      last_page,
+    },
+  }
+}
+
 export const useDataStore = defineStore('data', {
   state: () => ({
     candidates: [],
@@ -59,7 +132,54 @@ export const useDataStore = defineStore('data', {
     pollingStations_total: null,
     loading: false,
     errorMessage: '',
+    pagination: {
+      candidates: {
+        page: MIN_PAGE,
+        perpage: DEFAULT_PERPAGE,
+        total: 0,
+        last_page: MIN_PAGE,
+      },
+      regions: {
+        page: MIN_PAGE,
+        perpage: DEFAULT_PERPAGE,
+        total: 0,
+        last_page: MIN_PAGE,
+      },
+      pollingStations: {
+        page: MIN_PAGE,
+        perpage: DEFAULT_PERPAGE,
+        total: 0,
+        last_page: MIN_PAGE,
+      },
+    },
   }),
+  getters: {
+    get_resource_list(state) {
+      return (resourceName) => {
+        const resource = resources[resourceName]
+
+        if (!resource) {
+          return []
+        }
+
+        return state[resource.listKey]
+      }
+    },
+    get_resource_total(state) {
+      return (resourceName) => {
+        const resource = resources[resourceName]
+
+        if (!resource) {
+          return null
+        }
+
+        return state[resource.totalKey]
+      }
+    },
+    get_resource_pagination(state) {
+      return (resourceName) => state.pagination[resourceName] || null
+    },
+  },
   actions: {
     clearError() {
       this.errorMessage = ''
@@ -75,22 +195,30 @@ export const useDataStore = defineStore('data', {
       return resource
     },
 
-    async fetchResourceList(resourceName, page = 0, perpage = 5) {
+    applyResourceResponse(resourceName, payload, paginationParams) {
+      const resource = this.getResourceConfig(resourceName)
+      const normalized = normalizePaginatedResponse(payload, paginationParams)
+
+      this[resource.listKey] = normalized.list
+      this[resource.totalKey] = normalized.pagination.total
+      this.pagination[resource.paginationKey] = normalized.pagination
+    },
+
+    async fetchResourceList(resourceName, page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
       this.clearError()
       const resource = this.getResourceConfig(resourceName)
       const authStore = useAuthStore()
+      const paginationParams = normalizePaginationParams(page, perpage)
+
       this.loading = true
 
       try {
         const response = await axios.get(`${backendUrl}${resource.listEndpoint}`, {
           ...buildAuthHeaders(authStore.token),
-          params: {
-            page,
-            perpage,
-          },
+          params: paginationParams,
         })
 
-        this[resource.listKey] = response.data
+        this.applyResourceResponse(resourceName, response.data, paginationParams)
       } catch (error) {
         this.errorMessage = getErrorMessage(error)
         console.log(error)
@@ -99,48 +227,20 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-    async fetchResourceTotal(resourceName) {
-      this.clearError()
-      const resource = this.getResourceConfig(resourceName)
-      const authStore = useAuthStore()
-      this.loading = true
-
-      try {
-        const response = await axios.get(
-          `${backendUrl}${resource.totalEndpoint}`,
-          buildAuthHeaders(authStore.token),
-        )
-        this[resource.totalKey] = response.data
-      } catch (error) {
-        this.errorMessage = getErrorMessage(error)
-        console.log(error)
-      } finally {
-        this.loading = false
-      }
+    get_resource(resourceName, page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+      return this.fetchResourceList(resourceName, page, perpage)
     },
 
-    get_candidates(page = 0, perpage = 5) {
-      return this.fetchResourceList('candidates', page, perpage)
+    get_candidates(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+      return this.get_resource('candidates', page, perpage)
     },
 
-    get_candidates_total() {
-      return this.fetchResourceTotal('candidates')
+    get_regions(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+      return this.get_resource('regions', page, perpage)
     },
 
-    get_regions(page = 0, perpage = 5) {
-      return this.fetchResourceList('regions', page, perpage)
-    },
-
-    get_regions_total() {
-      return this.fetchResourceTotal('regions')
-    },
-
-    get_polling_stations(page = 0, perpage = 5) {
-      return this.fetchResourceList('pollingStations', page, perpage)
-    },
-
-    get_polling_stations_total() {
-      return this.fetchResourceTotal('pollingStations')
+    get_polling_stations(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+      return this.get_resource('pollingStations', page, perpage)
     },
   },
 })

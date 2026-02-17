@@ -27,7 +27,7 @@ export default {
       return Boolean(this.authStore.token) && !this.authStore.isAuthenticated
     },
     hasPollingStations() {
-      return this.dataStore.pollingStations.length > 0
+      return this.dataStore.get_resource_list('pollingStations').length > 0
     },
     showGuestState() {
       return !this.isAuthPending && !this.isAuthenticated
@@ -56,10 +56,7 @@ export default {
       this.isPollingStationLoading = true
 
       try {
-        await Promise.all([
-          this.dataStore.get_polling_stations(),
-          this.dataStore.get_polling_stations_total(),
-        ])
+        await this.dataStore.get_resource('pollingStations', 1, 5)
       } finally {
         this.isPollingStationLoading = false
       }

@@ -2,13 +2,13 @@
   <div class="region-table">
     <DataTable
       class="region-table__datatable"
-      :value="regions"
+      :value="rows"
       :lazy="true"
       :loading="dataStore.loading"
       :paginator="true"
       :rows="perpage"
       :rowsPerPageOptions="[2, 5, 10]"
-      :totalRecords="regions_total"
+      :totalRecords="totalRecords"
       @page="onPageChange"
       responsive-layout="scroll"
       :first="offset"
@@ -35,18 +35,19 @@ export default {
     }
   },
   computed: {
-    regions() {
-      return this.dataStore.regions
+    rows() {
+      return this.dataStore.get_resource_list('regions')
     },
-    regions_total() {
-      return this.dataStore.regions_total
+    totalRecords() {
+      return this.dataStore.get_resource_total('regions') || 0
     },
   },
   methods: {
     onPageChange(event) {
       this.offset = event.first
       this.perpage = event.rows
-      this.dataStore.get_regions(this.offset / this.perpage, this.perpage)
+      const page = (event.page ?? this.offset / this.perpage) + 1
+      this.dataStore.get_resource('regions', page, this.perpage)
     },
   },
 }
