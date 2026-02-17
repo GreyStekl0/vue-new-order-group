@@ -1,84 +1,138 @@
+<template>
+  <div class="polling-station-table">
+    <DataTable
+      class="polling-station-table__datatable"
+      :value="pollingStations"
+      :lazy="true"
+      :loading="dataStore.loading"
+      :paginator="true"
+      :rows="perpage"
+      :rowsPerPageOptions="[2, 5, 10]"
+      :totalRecords="pollingStations_total"
+      @page="onPageChange"
+      responsive-layout="scroll"
+      :first="offset"
+    >
+      <Column field="id" header="№" />
+      <Column field="stage_number" header="Номер участка" />
+      <Column field="number_of_voters" header="Избиратели" />
+    </DataTable>
+  </div>
+</template>
+
 <script>
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import { useDataStore } from '@/stores/dataStore'
 
 export default {
-  name: 'PollingStationGrid',
+  name: 'PollingStationTable',
+  components: { DataTable, Column },
   data() {
     return {
       dataStore: useDataStore(),
+      perpage: 5,
+      offset: 0,
     }
   },
   computed: {
     pollingStations() {
       return this.dataStore.pollingStations
     },
+    pollingStations_total() {
+      return this.dataStore.pollingStations_total
+    },
   },
   methods: {
-    resolveTitle(station) {
-      if (station?.name) {
-        return station.name
-      }
-
-      if (station?.['stage_number']) {
-        return `Участок №${station['stage_number']}`
-      }
-
-      return 'Участок'
-    },
-    resolveStatus(station) {
-      if (station?.status) {
-        return station.status
-      }
-
-      if (typeof station?.['number_of_voters'] === 'number') {
-        return `Избирателей: ${station['number_of_voters']}`
-      }
-
-      return 'Данные уточняются'
+    onPageChange(event) {
+      this.offset = event.first
+      this.perpage = event.rows
+      this.dataStore.get_polling_stations(this.offset / this.perpage, this.perpage)
     },
   },
 }
 </script>
 
-<template>
-  <div class="polling-station-grid">
-    <article v-for="station in pollingStations" :key="station.id" class="polling-station-grid__card">
-      <h3 class="polling-station-grid__name">{{ resolveTitle(station) }}</h3>
-      <p class="polling-station-grid__status">{{ resolveStatus(station) }}</p>
-    </article>
-  </div>
-</template>
-
 <style scoped>
-.polling-station-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--nog-space-polling-grid-gap);
+.polling-station-table {
   margin-top: var(--nog-space-polling-grid-offset);
 }
 
-.polling-station-grid__card {
-  border: 1px solid var(--nog-border-soft-strong);
-  border-radius: var(--nog-radius-card);
+.polling-station-table :deep(.p-datatable) {
+  border: 1px solid var(--nog-border);
+  border-radius: var(--nog-radius-surface);
   background: var(--nog-surface);
-  padding: var(--nog-space-polling-card-padding);
+  box-shadow: var(--nog-shadow-card-soft);
+  overflow: hidden;
 }
 
-.polling-station-grid__name {
-  margin: 0;
+.polling-station-table :deep(.p-datatable-table-container) {
+  background: var(--nog-surface);
+}
+
+.polling-station-table :deep(.p-datatable-thead > tr > th) {
+  border: 0;
+  border-bottom: 1px solid var(--nog-border);
+  background: var(--nog-accent-surface);
   color: var(--nog-text-strong);
+  font-size: var(--nog-font-size-sm);
+  font-weight: var(--nog-font-weight-semibold);
+  letter-spacing: var(--nog-letter-spacing-tight);
+  text-transform: uppercase;
+  padding: 0.9rem 1rem;
+}
+
+.polling-station-table :deep(.p-datatable-tbody > tr) {
+  transition: background-color var(--nog-duration-fast) ease;
+}
+
+.polling-station-table :deep(.p-datatable-tbody > tr > td) {
+  border: 0;
+  border-bottom: 1px solid var(--nog-border-soft);
+  padding: 0.9rem 1rem;
+  color: var(--nog-text-copy);
   font-size: var(--nog-font-size-base);
 }
 
-.polling-station-grid__status {
-  margin: var(--nog-space-polling-status-offset) 0 0;
-  color: var(--nog-text-copy-soft);
-  font-size: var(--nog-font-size-sm);
+.polling-station-table :deep(.p-datatable-tbody > tr:hover) {
+  background: var(--nog-hover-surface);
 }
 
-@media (max-width: 960px) {
-  .polling-station-grid {
-    grid-template-columns: 1fr;
-  }
+.polling-station-table :deep(.p-datatable-tbody > tr:last-child > td) {
+  border-bottom: 0;
+}
+
+.polling-station-table :deep(.p-column-title) {
+  color: var(--nog-text-strong);
+}
+
+.polling-station-table :deep(.p-paginator) {
+  border: 0;
+  border-top: 1px solid var(--nog-border);
+  background: var(--nog-surface-soft);
+  padding: 0.6rem 0.8rem;
+}
+
+.polling-station-table :deep(.p-paginator .p-paginator-page),
+.polling-station-table :deep(.p-paginator .p-paginator-next),
+.polling-station-table :deep(.p-paginator .p-paginator-prev),
+.polling-station-table :deep(.p-paginator .p-paginator-first),
+.polling-station-table :deep(.p-paginator .p-paginator-last) {
+  color: var(--nog-text-subtle);
+}
+
+.polling-station-table :deep(.p-paginator .p-paginator-page.p-paginator-page-selected) {
+  background: var(--nog-accent);
+  color: var(--nog-surface);
+}
+
+.polling-station-table :deep(.p-paginator .p-dropdown),
+.polling-station-table :deep(.p-paginator .p-select) {
+  border-color: var(--nog-border-soft);
+  background: var(--nog-surface);
+}
+
+.polling-station-table :deep(.p-datatable-loading-overlay) {
+  background: rgba(248, 251, 249, 0.75);
 }
 </style>
