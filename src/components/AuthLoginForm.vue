@@ -1,13 +1,8 @@
 <script setup>
-import { computed, onBeforeUnmount, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import InputText from 'primevue/inputtext'
 
 import { useAuthStore } from '@/stores/authStore'
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const EMAIL_SERVER_ERROR_PATTERN = /email|почт/i
-const PASSWORD_SERVER_ERROR_PATTERN = /password|парол/i
-const EMAIL_FORMAT_ERROR_DEBOUNCE_MS = 450
 
 const emit = defineEmits(['success'])
 const authStore = useAuthStore()
@@ -17,112 +12,40 @@ const state = reactive({
   password: '',
   showPassword: false,
   submitting: false,
-  submitAttempted: false,
-  emailFormatErrorReady: true,
 })
 
-let emailFormatErrorTimeoutId = null
-
-const serverErrors = computed(() => {
-  const message = authStore.errorMessage ? String(authStore.errorMessage).trim() : ''
-  if (!message) {
-    return { email: '', password: '', general: '' }
-  }
-
-  const email = EMAIL_SERVER_ERROR_PATTERN.test(message) ? message : ''
-  const password = PASSWORD_SERVER_ERROR_PATTERN.test(message) ? message : ''
-
-  return { email, password, general: email || password ? '' : message }
-})
-
-const emailError = computed(() => {
-  if (!state.email) {
-    return state.submitAttempted ? 'Введите email' : ''
-  }
-
-  if (!EMAIL_PATTERN.test(state.email)) {
-    return state.emailFormatErrorReady ? 'Введите корректный email' : ''
-  }
-
-  return serverErrors.value.email
-})
-
-const passwordError = computed(() => {
-  if (!state.submitAttempted) {
-    return ''
-  }
-
-  if (!state.password) {
-    return 'Введите пароль'
-  }
-
-  return serverErrors.value.password
-})
-
-function clearEmailFormatErrorTimer() {
-  if (emailFormatErrorTimeoutId !== null) {
-    clearTimeout(emailFormatErrorTimeoutId)
-    emailFormatErrorTimeoutId = null
-  }
-}
+const serverError = computed(() =>
+  authStore.errorMessage ? String(authStore.errorMessage).trim() : '',
+)
 
 function clearServerError() {
   authStore.errorMessage = ''
 }
 
-function resetEmailFormatError() {
-  state.emailFormatErrorReady = true
-  clearEmailFormatErrorTimer()
-}
-
-function onEmailInput() {
-  clearServerError()
-
-  if (!state.email || EMAIL_PATTERN.test(state.email)) {
-    resetEmailFormatError()
-    return
-  }
-
-  state.emailFormatErrorReady = false
-  clearEmailFormatErrorTimer()
-  emailFormatErrorTimeoutId = setTimeout(() => {
-    state.emailFormatErrorReady = true
-    emailFormatErrorTimeoutId = null
-  }, EMAIL_FORMAT_ERROR_DEBOUNCE_MS)
-}
-
 async function submit() {
-  state.submitAttempted = true
-  resetEmailFormatError()
-
-  if (emailError.value || passwordError.value) {
-    return
-  }
+  clearServerError()
 
   state.submitting = true
   try {
-    await authStore.login({ email: state.email, password: state.password })
+    await authStore.login({ email: String(state.email).trim(), password: state.password })
   } finally {
     state.submitting = false
   }
 
   if (authStore.isAuthenticated) {
-    state.submitAttempted = false
     state.password = ''
     emit('success')
   }
 }
-
-onBeforeUnmount(clearEmailFormatErrorTimer)
 </script>
 
 <template>
-  <form class="auth-login-form" novalidate @submit.prevent="submit">
+  <form class="auth-login-form" @submit.prevent="submit">
     <p class="auth-login-form__intro">
       Введите данные аккаунта new order group
     </p>
-    <p v-if="serverErrors.general" class="auth-login-form__alert auth-login-form__alert--general">
-      {{ serverErrors.general }}
+    <p v-if="serverError" class="auth-login-form__alert auth-login-form__alert--general">
+      {{ serverError }}
     </p>
 
     <label class="auth-login-form__label" for="login-email">Email</label>
@@ -130,15 +53,12 @@ onBeforeUnmount(clearEmailFormatErrorTimer)
       id="login-email"
       v-model.trim="state.email"
       type="email"
+      required
       autocomplete="username"
       class="auth-login-form__input"
-      :invalid="Boolean(emailError)"
       placeholder="name@neworder.group"
-      @input="onEmailInput"
+      @input="clearServerError"
     />
-    <p v-if="emailError" class="auth-login-form__alert">
-      {{ emailError }}
-    </p>
 
     <label class="auth-login-form__label auth-login-form__label--password" for="login-password">
       Пароль
@@ -148,18 +68,15 @@ onBeforeUnmount(clearEmailFormatErrorTimer)
         id="login-password"
         v-model="state.password"
         :type="state.showPassword ? 'text' : 'password'"
+        required
         autocomplete="current-password"
         class="auth-login-form__input auth-login-form__input--password"
-        :invalid="Boolean(passwordError)"
         @input="clearServerError"
       />
       <button type="button" class="auth-login-form__password-toggle" @click="state.showPassword = !state.showPassword">
         <i :class="state.showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
       </button>
     </div>
-    <p v-if="passwordError" class="auth-login-form__alert">
-      {{ passwordError }}
-    </p>
 
     <button type="submit" class="auth-login-form__submit" :disabled="state.submitting">
       <i v-if="state.submitting" class="pi pi-spinner pi-spin" />
