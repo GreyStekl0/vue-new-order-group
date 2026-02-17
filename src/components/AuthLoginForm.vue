@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import { computed, onBeforeUnmount, reactive } from 'vue'
 import InputText from 'primevue/inputtext'
 
 import { useAuthStore } from '@/stores/authStore'
@@ -8,153 +9,111 @@ const EMAIL_SERVER_ERROR_PATTERN = /email|почт/i
 const PASSWORD_SERVER_ERROR_PATTERN = /password|парол/i
 const EMAIL_FORMAT_ERROR_DEBOUNCE_MS = 450
 
-export default {
-  name: 'AuthLoginForm',
-  components: {
-    InputText,
-  },
-  data() {
-    return {
-      email: '',
-      password: '',
-      showPassword: false,
-      submitting: false,
-      submitAttempted: false,
-      emailFormatErrorReady: true,
-      emailFormatErrorTimeoutId: null,
-      authStore: useAuthStore(),
-    }
-  },
-  beforeUnmount() {
-    this.clearEmailFormatErrorTimer()
-  },
-  computed: {
-    serverError() {
-      return this.authStore.errorMessage ? String(this.authStore.errorMessage).trim() : ''
-    },
-    emailFieldServerError() {
-      return EMAIL_SERVER_ERROR_PATTERN.test(this.serverError) ? this.serverError : ''
-    },
-    passwordFieldServerError() {
-      return PASSWORD_SERVER_ERROR_PATTERN.test(this.serverError) ? this.serverError : ''
-    },
-    generalServerError() {
-      if (!this.serverError) {
-        return ''
-      }
+const emit = defineEmits(['success'])
+const authStore = useAuthStore()
 
-      if (this.emailFieldServerError || this.passwordFieldServerError) {
-        return ''
-      }
+const state = reactive({
+  email: '',
+  password: '',
+  showPassword: false,
+  submitting: false,
+  submitAttempted: false,
+  emailFormatErrorReady: true,
+})
 
-      return this.serverError
-    },
-    emailError() {
-      if (!this.email) {
-        return this.submitAttempted ? 'Введите email' : ''
-      }
+let emailFormatErrorTimeoutId = null
 
-      if (!EMAIL_PATTERN.test(this.email)) {
-        if (!this.emailFormatErrorReady) {
-          return ''
-        }
+const serverErrors = computed(() => {
+  const message = authStore.errorMessage ? String(authStore.errorMessage).trim() : ''
+  if (!message) {
+    return { email: '', password: '', general: '' }
+  }
 
-        return 'Введите корректный email'
-      }
+  const email = EMAIL_SERVER_ERROR_PATTERN.test(message) ? message : ''
+  const password = PASSWORD_SERVER_ERROR_PATTERN.test(message) ? message : ''
 
-      if (this.emailFieldServerError) {
-        return this.emailFieldServerError
-      }
+  return { email, password, general: email || password ? '' : message }
+})
 
-      return ''
-    },
-    passwordError() {
-      if (!this.submitAttempted) {
-        return ''
-      }
+const emailError = computed(() => {
+  if (!state.email) {
+    return state.submitAttempted ? 'Введите email' : ''
+  }
 
-      if (!this.password) {
-        return 'Введите пароль'
-      }
+  if (!EMAIL_PATTERN.test(state.email)) {
+    return state.emailFormatErrorReady ? 'Введите корректный email' : ''
+  }
 
-      if (this.passwordFieldServerError) {
-        return this.passwordFieldServerError
-      }
+  return serverErrors.value.email
+})
 
-      return ''
-    },
-    generalError() {
-      if (this.generalServerError) {
-        return this.generalServerError
-      }
+const passwordError = computed(() => {
+  if (!state.submitAttempted) {
+    return ''
+  }
 
-      return ''
-    },
-  },
-  methods: {
-    clearEmailFormatErrorTimer() {
-      if (this.emailFormatErrorTimeoutId !== null) {
-        clearTimeout(this.emailFormatErrorTimeoutId)
-        this.emailFormatErrorTimeoutId = null
-      }
-    },
-    clearServerError() {
-      if (this.authStore.errorMessage) {
-        this.authStore.errorMessage = ''
-      }
-    },
-    onEmailInput() {
-      this.clearServerError()
+  if (!state.password) {
+    return 'Введите пароль'
+  }
 
-      if (!this.email || EMAIL_PATTERN.test(this.email)) {
-        this.emailFormatErrorReady = true
-        this.clearEmailFormatErrorTimer()
-        return
-      }
+  return serverErrors.value.password
+})
 
-      this.emailFormatErrorReady = false
-      this.clearEmailFormatErrorTimer()
-      this.emailFormatErrorTimeoutId = setTimeout(() => {
-        this.emailFormatErrorReady = true
-        this.emailFormatErrorTimeoutId = null
-      }, EMAIL_FORMAT_ERROR_DEBOUNCE_MS)
-    },
-    onPasswordInput() {
-      this.clearServerError()
-    },
-    togglePassword() {
-      this.showPassword = !this.showPassword
-    },
-    hasClientErrors() {
-      return Boolean(this.emailError || this.passwordError)
-    },
-    async submit() {
-      this.submitAttempted = true
-      this.emailFormatErrorReady = true
-      this.clearEmailFormatErrorTimer()
-
-      if (this.hasClientErrors()) {
-        return
-      }
-
-      this.submitting = true
-      try {
-        await this.authStore.login({
-          email: this.email,
-          password: this.password,
-        })
-      } finally {
-        this.submitting = false
-      }
-
-      if (this.authStore.isAuthenticated) {
-        this.submitAttempted = false
-        this.password = ''
-        this.$emit('success')
-      }
-    },
-  },
+function clearEmailFormatErrorTimer() {
+  if (emailFormatErrorTimeoutId !== null) {
+    clearTimeout(emailFormatErrorTimeoutId)
+    emailFormatErrorTimeoutId = null
+  }
 }
+
+function clearServerError() {
+  authStore.errorMessage = ''
+}
+
+function resetEmailFormatError() {
+  state.emailFormatErrorReady = true
+  clearEmailFormatErrorTimer()
+}
+
+function onEmailInput() {
+  clearServerError()
+
+  if (!state.email || EMAIL_PATTERN.test(state.email)) {
+    resetEmailFormatError()
+    return
+  }
+
+  state.emailFormatErrorReady = false
+  clearEmailFormatErrorTimer()
+  emailFormatErrorTimeoutId = setTimeout(() => {
+    state.emailFormatErrorReady = true
+    emailFormatErrorTimeoutId = null
+  }, EMAIL_FORMAT_ERROR_DEBOUNCE_MS)
+}
+
+async function submit() {
+  state.submitAttempted = true
+  resetEmailFormatError()
+
+  if (emailError.value || passwordError.value) {
+    return
+  }
+
+  state.submitting = true
+  try {
+    await authStore.login({ email: state.email, password: state.password })
+  } finally {
+    state.submitting = false
+  }
+
+  if (authStore.isAuthenticated) {
+    state.submitAttempted = false
+    state.password = ''
+    emit('success')
+  }
+}
+
+onBeforeUnmount(clearEmailFormatErrorTimer)
 </script>
 
 <template>
@@ -162,16 +121,14 @@ export default {
     <p class="auth-login-form__intro">
       Введите данные аккаунта new order group
     </p>
-    <p v-if="generalError" class="auth-login-form__alert auth-login-form__alert--general">
-      {{ generalError }}
+    <p v-if="serverErrors.general" class="auth-login-form__alert auth-login-form__alert--general">
+      {{ serverErrors.general }}
     </p>
 
-    <label class="auth-login-form__label" for="login-email">
-      Email
-    </label>
+    <label class="auth-login-form__label" for="login-email">Email</label>
     <InputText
       id="login-email"
-      v-model.trim="email"
+      v-model.trim="state.email"
       type="email"
       autocomplete="username"
       class="auth-login-form__input"
@@ -189,33 +146,25 @@ export default {
     <div class="auth-login-form__password-wrap">
       <InputText
         id="login-password"
-        v-model="password"
-        :type="showPassword ? 'text' : 'password'"
+        v-model="state.password"
+        :type="state.showPassword ? 'text' : 'password'"
         autocomplete="current-password"
         class="auth-login-form__input auth-login-form__input--password"
         :invalid="Boolean(passwordError)"
-        @input="onPasswordInput"
+        @input="clearServerError"
       />
-      <button
-        type="button"
-        class="auth-login-form__password-toggle"
-        @click="togglePassword"
-      >
-        <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
+      <button type="button" class="auth-login-form__password-toggle" @click="state.showPassword = !state.showPassword">
+        <i :class="state.showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
       </button>
     </div>
     <p v-if="passwordError" class="auth-login-form__alert">
       {{ passwordError }}
     </p>
 
-    <button
-      type="submit"
-      class="auth-login-form__submit"
-      :disabled="submitting"
-    >
-      <i v-if="submitting" class="pi pi-spinner pi-spin" />
+    <button type="submit" class="auth-login-form__submit" :disabled="state.submitting">
+      <i v-if="state.submitting" class="pi pi-spinner pi-spin" />
       <i v-else class="pi pi-sign-in" />
-      <span>{{ submitting ? 'Вход...' : 'Войти' }}</span>
+      <span>{{ state.submitting ? 'Вход...' : 'Войти' }}</span>
     </button>
   </form>
 </template>
