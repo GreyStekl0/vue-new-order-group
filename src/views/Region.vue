@@ -1,15 +1,10 @@
 <script>
-import EmptyState from '@/components/EmptyState.vue'
+import Region from '@/components/Region.vue'
 
 export default {
   name: 'RegionPageView',
   components: {
-    EmptyState,
-  },
-  data() {
-    return {
-      regions: [],
-    }
+    Region,
   },
 }
 </script>
@@ -23,19 +18,7 @@ export default {
       </h2>
     </header>
 
-    <div v-if="regions.length" class="region-view__grid">
-      <article v-for="region in regions" :key="region.id" class="region-view__card">
-        <strong class="region-view__name">{{ region.name }}</strong>
-      </article>
-    </div>
-
-    <EmptyState
-      v-else
-      class="region-view__empty"
-      icon="pi pi-inbox"
-      title="Глобальная карта чиста"
-      description="Центр управления ожидает подтверждения новых целей. Модуль геополитического влияния находится в режиме пассивного мониторинга."
-    />
+    <Region class="region-view__content" />
   </section>
 </template>
 
@@ -48,24 +31,7 @@ export default {
   font-size: var(--nog-font-size-section-title);
 }
 
-.region-view__grid {
-  display: grid;
-  gap: var(--nog-space-region-grid-gap);
-  margin-top: var(--nog-space-region-grid-offset);
-}
-
-.region-view__card {
-  border: 1px solid var(--nog-border-soft);
-  border-radius: var(--nog-radius-card);
-  background: var(--nog-accent-surface);
-  padding: var(--nog-space-region-card-y) var(--nog-space-region-card-x);
-}
-
-.region-view__name {
-  color: var(--nog-text-strong);
-}
-
-.region-view__empty {
-  margin-top: var(--nog-space-empty-offset);
+.region-view__content {
+  display: block;
 }
 </style>

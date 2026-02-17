@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/authStore'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -36,6 +37,18 @@ function getErrorMessage(error) {
   return 'Request failed'
 }
 
+function buildAuthHeaders(token) {
+  if (!token) {
+    return {}
+  }
+
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+}
+
 export const useDataStore = defineStore('data', {
   state: () => ({
     candidates: [],
@@ -65,10 +78,12 @@ export const useDataStore = defineStore('data', {
     async fetchResourceList(resourceName, page = 0, perpage = 5) {
       this.clearError()
       const resource = this.getResourceConfig(resourceName)
+      const authStore = useAuthStore()
       this.loading = true
 
       try {
         const response = await axios.get(`${backendUrl}${resource.listEndpoint}`, {
+          ...buildAuthHeaders(authStore.token),
           params: {
             page,
             perpage,
@@ -87,10 +102,14 @@ export const useDataStore = defineStore('data', {
     async fetchResourceTotal(resourceName) {
       this.clearError()
       const resource = this.getResourceConfig(resourceName)
+      const authStore = useAuthStore()
       this.loading = true
 
       try {
-        const response = await axios.get(`${backendUrl}${resource.totalEndpoint}`)
+        const response = await axios.get(
+          `${backendUrl}${resource.totalEndpoint}`,
+          buildAuthHeaders(authStore.token),
+        )
         this[resource.totalKey] = response.data
       } catch (error) {
         this.errorMessage = getErrorMessage(error)
