@@ -1,14 +1,65 @@
 <script>
+import AuthRequiredState from '@/components/AuthRequiredState.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import PollingStation from '@/components/PollingStation.vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useDataStore } from '@/stores/dataStore'
 
 export default {
   name: 'PollingStationPageView',
   components: {
+    AuthRequiredState,
     EmptyState,
+    PollingStation,
   },
   data() {
     return {
-      pollingStations: [],
+      authStore: useAuthStore(),
+      dataStore: useDataStore(),
+      isPollingStationLoading: false,
+    }
+  },
+  computed: {
+    isAuthenticated() {
+      return this.authStore.isAuthenticated
+    },
+    isAuthPending() {
+      return Boolean(this.authStore.token) && !this.authStore.isAuthenticated
+    },
+    hasPollingStations() {
+      return this.dataStore.get_resource_list('pollingStations').length > 0
+    },
+    showGuestState() {
+      return !this.isAuthPending && !this.isAuthenticated
+    },
+    showPollingStationGrid() {
+      return this.isAuthenticated && this.hasPollingStations
+    },
+    showEmptyState() {
+      return this.isAuthenticated && !this.isPollingStationLoading && !this.hasPollingStations
+    },
+  },
+  mounted() {
+    if (this.isAuthenticated) {
+      this.loadPollingStations()
+    }
+  },
+  watch: {
+    isAuthenticated(value) {
+      if (value) {
+        this.loadPollingStations()
+      }
+    },
+  },
+  methods: {
+    async loadPollingStations() {
+      this.isPollingStationLoading = true
+
+      try {
+        await this.dataStore.get_resource('pollingStations', 1, 5)
+      } finally {
+        this.isPollingStationLoading = false
+      }
     }
   },
 }
@@ -23,20 +74,19 @@ export default {
       </h2>
     </header>
 
-    <div v-if="pollingStations.length" class="polling-station-view__grid">
-      <article v-for="station in pollingStations" :key="station.id" class="polling-station-view__card">
-        <h3 class="polling-station-view__name">{{ station.name }}</h3>
-        <p class="polling-station-view__status">{{ station.status }}</p>
-      </article>
-    </div>
+    <AuthRequiredState v-if="showGuestState" class="polling-station-view__state" />
+
+    <PollingStation v-else-if="showPollingStationGrid" class="polling-station-view__content" />
 
     <EmptyState
-      v-else
-      class="polling-station-view__empty"
+      v-else-if="showEmptyState"
+      class="polling-station-view__state"
       icon="pi pi-folder-open"
       title="Сектор не инициализирован"
       description="Полевые агенты еще не передали данные с мест. Не предпринимайте активных действий до полной синхронизации протоколов."
     />
+
+    <p v-else class="polling-station-view__loading">Синхронизация данных...</p>
   </section>
 </template>
 
@@ -49,39 +99,16 @@ export default {
   font-size: var(--nog-font-size-section-title);
 }
 
-.polling-station-view__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--nog-space-polling-grid-gap);
-  margin-top: var(--nog-space-polling-grid-offset);
+.polling-station-view__content {
+  display: block;
 }
 
-.polling-station-view__card {
-  border: 1px solid var(--nog-border-soft-strong);
-  border-radius: var(--nog-radius-card);
-  background: var(--nog-surface);
-  padding: var(--nog-space-polling-card-padding);
-}
-
-.polling-station-view__name {
-  margin: 0;
-  color: var(--nog-text-strong);
-  font-size: var(--nog-font-size-base);
-}
-
-.polling-station-view__status {
-  margin: var(--nog-space-polling-status-offset) 0 0;
-  color: var(--nog-text-copy-soft);
-  font-size: var(--nog-font-size-sm);
-}
-
-.polling-station-view__empty {
+.polling-station-view__state {
   margin-top: var(--nog-space-empty-offset);
 }
 
-@media (max-width: 960px) {
-  .polling-station-view__grid {
-    grid-template-columns: 1fr;
-  }
+.polling-station-view__loading {
+  margin-top: var(--nog-space-polling-grid-offset);
+  color: var(--nog-text-subtle);
 }
 </style>

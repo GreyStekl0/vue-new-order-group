@@ -319,7 +319,6 @@ export default {
 }
 
 .app-content-surface {
-  min-height: var(--nog-main-surface-min-height);
   border: 1px solid var(--nog-border);
   border-radius: var(--nog-radius-surface);
   background: var(--nog-surface);
