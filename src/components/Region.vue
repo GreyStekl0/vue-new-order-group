@@ -7,7 +7,7 @@
       :loading="dataStore.loading"
       :paginator="true"
       :rows="perpage"
-      :rowsPerPageOptions="[2, 5, 10]"
+      :rowsPerPageOptions="rowsPerPageOptions"
       :totalRecords="totalRecords"
       @page="onPageChange"
       responsive-layout="scroll"
@@ -19,38 +19,17 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import { useDataStore } from '@/stores/dataStore'
+import { useResourceTable } from '@/composables/useResourceTable'
 
-export default {
+defineOptions({
   name: 'RegionTable',
-  components: { DataTable, Column },
-  data() {
-    return {
-      dataStore: useDataStore(),
-      perpage: 5,
-      offset: 0,
-    }
-  },
-  computed: {
-    rows() {
-      return this.dataStore.get_resource_list('regions')
-    },
-    totalRecords() {
-      return this.dataStore.get_resource_total('regions') || 0
-    },
-  },
-  methods: {
-    onPageChange(event) {
-      this.offset = event.first
-      this.perpage = event.rows
-      const page = (event.page ?? this.offset / this.perpage) + 1
-      this.dataStore.get_resource('regions', page, this.perpage)
-    },
-  },
-}
+})
+
+const { dataStore, perpage, offset, rowsPerPageOptions, rows, totalRecords, onPageChange } =
+  useResourceTable('regions')
 </script>
 
 <style scoped>

@@ -1,68 +1,15 @@
-<script>
+<script setup>
 import Region from '@/components/Region.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import AuthRequiredState from '@/components/AuthRequiredState.vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useDataStore } from '@/stores/dataStore'
+import { useAuthResourcePage } from '@/composables/useAuthResourcePage'
 
-export default {
+defineOptions({
   name: 'RegionPageView',
-  components: {
-    Region,
-    EmptyState,
-    AuthRequiredState,
-  },
-  data() {
-    return {
-      authStore: useAuthStore(),
-      dataStore: useDataStore(),
-      isRegionLoading: false,
-    }
-  },
-  computed: {
-    isAuthenticated() {
-      return this.authStore.isAuthenticated
-    },
-    isAuthPending() {
-      return Boolean(this.authStore.token) && !this.authStore.isAuthenticated
-    },
-    hasRegions() {
-      return this.dataStore.get_resource_list('regions').length > 0
-    },
-    showGuestState() {
-      return !this.isAuthPending && !this.isAuthenticated
-    },
-    showRegionTable() {
-      return this.isAuthenticated && this.hasRegions
-    },
-    showEmptyState() {
-      return this.isAuthenticated && !this.isRegionLoading && !this.hasRegions
-    },
-  },
-  mounted() {
-    if (this.isAuthenticated) {
-      this.loadRegions()
-    }
-  },
-  watch: {
-    isAuthenticated(value) {
-      if (value) {
-        this.loadRegions()
-      }
-    },
-  },
-  methods: {
-    async loadRegions() {
-      this.isRegionLoading = true
+})
 
-      try {
-        await this.dataStore.get_resource('regions', 1, 5)
-      } finally {
-        this.isRegionLoading = false
-      }
-    },
-  },
-}
+const { showGuestState, showResourceState: showRegionTable, showEmptyState } =
+  useAuthResourcePage('regions')
 </script>
 
 <template>

@@ -1,21 +1,22 @@
-<script>
-export default {
+<script setup>
+defineOptions({
   name: 'EmptyState',
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      default: '',
-    },
-    icon: {
-      type: String,
-      default: 'pi pi-info-circle',
-    },
+})
+
+defineProps({
+  title: {
+    type: String,
+    required: true,
   },
-}
+  description: {
+    type: String,
+    default: '',
+  },
+  icon: {
+    type: String,
+    default: 'pi pi-info-circle',
+  },
+})
 </script>
 
 <template>

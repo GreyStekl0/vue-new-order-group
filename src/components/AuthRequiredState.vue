@@ -1,12 +1,11 @@
-<script>
-export default {
+<script setup>
+import { useOpenLoginModal } from '@/composables/useLoginModalChannel'
+
+defineOptions({
   name: 'AuthRequiredState',
-  methods: {
-    openLoginModal() {
-      window.dispatchEvent(new Event('open-login-modal'))
-    },
-  },
-}
+})
+
+const { openLoginModal } = useOpenLoginModal()
 </script>
 
 <template>

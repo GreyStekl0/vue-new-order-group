@@ -1,7 +1,7 @@
-<script>
-export default {
+<script setup>
+defineOptions({
   name: 'HomePageView',
-}
+})
 </script>
 
 <template>

@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import axios from 'axios'
+
 import { useAuthStore } from '@/stores/authStore'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
@@ -12,19 +14,16 @@ const resources = {
   candidates: {
     listEndpoint: '/candidates',
     listKey: 'candidates',
-    totalKey: 'candidates_total',
     paginationKey: 'candidates',
   },
   regions: {
     listEndpoint: '/regions',
     listKey: 'regions',
-    totalKey: 'regions_total',
     paginationKey: 'regions',
   },
   pollingStations: {
     listEndpoint: '/polling-stations',
     listKey: 'pollingStations',
-    totalKey: 'pollingStations_total',
     paginationKey: 'pollingStations',
   },
 }
@@ -102,125 +101,102 @@ function normalizePaginatedResponse(payload) {
   }
 }
 
-export const useDataStore = defineStore('data', {
-  state: () => ({
-    candidates: [],
-    candidates_total: null,
-    regions: [],
-    regions_total: null,
-    pollingStations: [],
-    pollingStations_total: null,
-    loading: false,
-    errorMessage: '',
-    pagination: {
-      candidates: {
-        page: MIN_PAGE,
-        perpage: DEFAULT_PERPAGE,
-        total: 0,
-        last_page: MIN_PAGE,
-      },
-      regions: {
-        page: MIN_PAGE,
-        perpage: DEFAULT_PERPAGE,
-        total: 0,
-        last_page: MIN_PAGE,
-      },
-      pollingStations: {
-        page: MIN_PAGE,
-        perpage: DEFAULT_PERPAGE,
-        total: 0,
-        last_page: MIN_PAGE,
-      },
+export const useDataStore = defineStore('data', () => {
+  const candidates = ref([])
+  const regions = ref([])
+  const pollingStations = ref([])
+  const loading = ref(false)
+  const errorMessage = ref('')
+  const pagination = ref({
+    candidates: {
+      page: MIN_PAGE,
+      perpage: DEFAULT_PERPAGE,
+      total: 0,
+      last_page: MIN_PAGE,
     },
-  }),
-  getters: {
-    get_resource_list(state) {
-      return (resourceName) => {
-        const resource = resources[resourceName]
-
-        if (!resource) {
-          return []
-        }
-
-        return state[resource.listKey]
-      }
+    regions: {
+      page: MIN_PAGE,
+      perpage: DEFAULT_PERPAGE,
+      total: 0,
+      last_page: MIN_PAGE,
     },
-    get_resource_total(state) {
-      return (resourceName) => {
-        const resource = resources[resourceName]
-
-        if (!resource) {
-          return null
-        }
-
-        return state[resource.totalKey]
-      }
+    pollingStations: {
+      page: MIN_PAGE,
+      perpage: DEFAULT_PERPAGE,
+      total: 0,
+      last_page: MIN_PAGE,
     },
-    get_resource_pagination(state) {
-      return (resourceName) => state.pagination[resourceName] || null
-    },
-  },
-  actions: {
-    clearError() {
-      this.errorMessage = ''
-    },
+  })
 
-    getResourceConfig(resourceName) {
-      const resource = resources[resourceName]
+  const resourceLists = {
+    candidates,
+    regions,
+    pollingStations,
+  }
 
-      if (!resource) {
-        throw new Error(`Unknown resource: ${resourceName}`)
-      }
+  function get_resource_list(resourceName) {
+    const resource = resources[resourceName]
 
-      return resource
-    },
+    if (!resource) {
+      return []
+    }
 
-    applyResourceResponse(resourceName, payload) {
-      const resource = this.getResourceConfig(resourceName)
-      const normalized = normalizePaginatedResponse(payload)
+    return resourceLists[resource.listKey]?.value ?? []
+  }
 
-      this[resource.listKey] = normalized.list
-      this[resource.totalKey] = normalized.pagination.total
-      this.pagination[resource.paginationKey] = normalized.pagination
-    },
+  function clearError() {
+    errorMessage.value = ''
+  }
 
-    async fetchResourceList(resourceName, page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
-      this.clearError()
-      const resource = this.getResourceConfig(resourceName)
-      const authStore = useAuthStore()
-      const paginationParams = normalizePaginationParams(page, perpage)
+  function getResourceConfig(resourceName) {
+    const resource = resources[resourceName]
 
-      this.loading = true
+    if (!resource) {
+      throw new Error(`Unknown resource: ${resourceName}`)
+    }
 
-      try {
-        const response = await axios.get(`${backendUrl}${resource.listEndpoint}`, {
-          ...buildAuthHeaders(authStore.token),
-          params: paginationParams,
-        })
+    return resource
+  }
 
-        this.applyResourceResponse(resourceName, response.data)
-      } catch (error) {
-        this.errorMessage = getErrorMessage(error)
-        console.log(error)
-      } finally {
-        this.loading = false
-      }
-    },
+  function applyResourceResponse(resourceName, payload) {
+    const resource = getResourceConfig(resourceName)
+    const normalized = normalizePaginatedResponse(payload)
 
-    get_resource(resourceName, page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
-      return this.fetchResourceList(resourceName, page, perpage)
-    },
+    resourceLists[resource.listKey].value = normalized.list
+    pagination.value[resource.paginationKey] = normalized.pagination
+  }
 
-    get_candidates(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
-      return this.get_resource('candidates', page, perpage)
-    },
+  async function fetchResourceList(resourceName, page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+    clearError()
+    const resource = getResourceConfig(resourceName)
+    const authStore = useAuthStore()
+    const paginationParams = normalizePaginationParams(page, perpage)
 
-    get_regions(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
-      return this.get_resource('regions', page, perpage)
-    },
+    loading.value = true
 
-    get_polling_stations(page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
-      return this.get_resource('pollingStations', page, perpage)
-    },
-  },
+    try {
+      const response = await axios.get(`${backendUrl}${resource.listEndpoint}`, {
+        ...buildAuthHeaders(authStore.token),
+        params: paginationParams,
+      })
+
+      applyResourceResponse(resourceName, response.data)
+    } catch (error) {
+      errorMessage.value = getErrorMessage(error)
+      console.log(error)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  function get_resource(resourceName, page = MIN_PAGE, perpage = DEFAULT_PERPAGE) {
+    return fetchResourceList(resourceName, page, perpage)
+  }
+
+  return {
+    loading,
+    pagination,
+    get_resource,
+    get_resource_list,
+  }
 })

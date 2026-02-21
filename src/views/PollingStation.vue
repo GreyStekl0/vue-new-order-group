@@ -1,68 +1,15 @@
-<script>
+<script setup>
 import AuthRequiredState from '@/components/AuthRequiredState.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import PollingStation from '@/components/PollingStation.vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useDataStore } from '@/stores/dataStore'
+import { useAuthResourcePage } from '@/composables/useAuthResourcePage'
 
-export default {
+defineOptions({
   name: 'PollingStationPageView',
-  components: {
-    AuthRequiredState,
-    EmptyState,
-    PollingStation,
-  },
-  data() {
-    return {
-      authStore: useAuthStore(),
-      dataStore: useDataStore(),
-      isPollingStationLoading: false,
-    }
-  },
-  computed: {
-    isAuthenticated() {
-      return this.authStore.isAuthenticated
-    },
-    isAuthPending() {
-      return Boolean(this.authStore.token) && !this.authStore.isAuthenticated
-    },
-    hasPollingStations() {
-      return this.dataStore.get_resource_list('pollingStations').length > 0
-    },
-    showGuestState() {
-      return !this.isAuthPending && !this.isAuthenticated
-    },
-    showPollingStationGrid() {
-      return this.isAuthenticated && this.hasPollingStations
-    },
-    showEmptyState() {
-      return this.isAuthenticated && !this.isPollingStationLoading && !this.hasPollingStations
-    },
-  },
-  mounted() {
-    if (this.isAuthenticated) {
-      this.loadPollingStations()
-    }
-  },
-  watch: {
-    isAuthenticated(value) {
-      if (value) {
-        this.loadPollingStations()
-      }
-    },
-  },
-  methods: {
-    async loadPollingStations() {
-      this.isPollingStationLoading = true
+})
 
-      try {
-        await this.dataStore.get_resource('pollingStations', 1, 5)
-      } finally {
-        this.isPollingStationLoading = false
-      }
-    }
-  },
-}
+const { showGuestState, showResourceState: showPollingStationGrid, showEmptyState } =
+  useAuthResourcePage('pollingStations')
 </script>
 
 <template>

@@ -1,59 +1,52 @@
-<script>
+<script setup>
+import { computed, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import InputText from 'primevue/inputtext'
 
 import { useAuthStore } from '@/stores/authStore'
 
-export default {
+defineOptions({
   name: 'AuthLoginForm',
-  components: {
-    InputText,
-  },
-  emits: ['success'],
-  data() {
-    return {
-      authStore: useAuthStore(),
-      email: '',
-      password: '',
-      showPassword: false,
-      submitting: false,
-    }
-  },
-  computed: {
-    serverError() {
-      return this.authStore.errorMessage ? String(this.authStore.errorMessage).trim() : ''
-    },
-  },
-  methods: {
-    clearServerError() {
-      this.authStore.clearError()
-    },
-    async submit() {
-      this.clearServerError()
+})
 
-      this.submitting = true
-      try {
-        await this.authStore.login({
-          email: String(this.email).trim(),
-          password: this.password,
-        })
-      } finally {
-        this.submitting = false
-      }
+const emit = defineEmits(['success'])
 
-      if (this.authStore.isAuthenticated) {
-        this.password = ''
-        this.$emit('success')
-      }
-    },
-  },
+const authStore = useAuthStore()
+const { errorMessage, isAuthenticated } = storeToRefs(authStore)
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
+const submitting = ref(false)
+
+const serverError = computed(() => (errorMessage.value ? String(errorMessage.value).trim() : ''))
+
+function clearServerError() {
+  authStore.clearError()
+}
+
+async function submit() {
+  clearServerError()
+
+  submitting.value = true
+  try {
+    await authStore.login({
+      email: String(email.value).trim(),
+      password: password.value,
+    })
+  } finally {
+    submitting.value = false
+  }
+
+  if (isAuthenticated.value) {
+    password.value = ''
+    emit('success')
+  }
 }
 </script>
 
 <template>
   <form class="auth-login-form" @submit.prevent="submit">
-    <p class="auth-login-form__intro">
-      Введите данные аккаунта new order group
-    </p>
+    <p class="auth-login-form__intro">Введите данные аккаунта new order group</p>
     <p v-if="serverError" class="auth-login-form__alert auth-login-form__alert--general">
       {{ serverError }}
     </p>
@@ -83,7 +76,11 @@ export default {
         class="auth-login-form__input auth-login-form__input--password"
         @input="clearServerError"
       />
-      <button type="button" class="auth-login-form__password-toggle" @click="showPassword = !showPassword">
+      <button
+        type="button"
+        class="auth-login-form__password-toggle"
+        @click="showPassword = !showPassword"
+      >
         <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" />
       </button>
     </div>

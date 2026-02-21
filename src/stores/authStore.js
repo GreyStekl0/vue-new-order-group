@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import axios from 'axios'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
@@ -23,74 +24,100 @@ function getErrorMessage(error) {
   return 'Request failed'
 }
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null,
-    token: localStorage.getItem('token') || null,
-    isAuthenticated: false,
-    errorMessage: '',
-  }),
-  actions: {
-    clearError() {
-      this.errorMessage = ''
-    },
-    setSession(token, user = null) {
-      this.token = token
-      this.user = user
-      this.isAuthenticated = Boolean(token)
+function createAuthActions({ user, token, isAuthenticated, errorMessage }) {
+  function clearError() {
+    errorMessage.value = ''
+  }
 
-      if (token) {
-        localStorage.setItem('token', token)
-      } else {
-        localStorage.removeItem('token')
-      }
-    },
-    clearSession() {
-      this.setSession(null, null)
-    },
-    async login(credentials) {
-      this.clearError()
+  function setSession(nextToken, nextUser = null) {
+    token.value = nextToken
+    user.value = nextUser
+    isAuthenticated.value = Boolean(nextToken)
 
-      try {
-        const response = await axios.post(`${backendUrl}/login`, credentials)
-        this.setSession(response.data.token, response.data.user || null)
-      } catch (error) {
-        this.clearSession()
-        this.errorMessage = getErrorMessage(error)
-      }
-    },
-    async getUser() {
-      this.clearError()
+    if (nextToken) {
+      localStorage.setItem('token', nextToken)
+    } else {
+      localStorage.removeItem('token')
+    }
+  }
 
-      if (!this.token) {
-        this.clearSession()
-        return
-      }
+  function clearSession() {
+    setSession(null, null)
+  }
 
-      try {
-        const response = await axios.get(`${backendUrl}/user`, buildAuthHeaders(this.token))
-        this.user = response.data
-        this.isAuthenticated = true
-      } catch (error) {
-        this.clearSession()
-        this.errorMessage = getErrorMessage(error)
-      }
-    },
-    async logout() {
-      this.clearError()
+  async function login(credentials) {
+    clearError()
 
-      if (!this.token) {
-        this.clearSession()
-        return
-      }
+    try {
+      const response = await axios.post(`${backendUrl}/login`, credentials)
+      setSession(response.data.token, response.data.user || null)
+    } catch (error) {
+      clearSession()
+      errorMessage.value = getErrorMessage(error)
+    }
+  }
 
-      try {
-        await axios.post(`${backendUrl}/logout`, null, buildAuthHeaders(this.token))
-      } catch (error) {
-        this.errorMessage = getErrorMessage(error)
-      } finally {
-        this.clearSession()
-      }
-    },
-  },
+  async function getUser() {
+    clearError()
+
+    if (!token.value) {
+      clearSession()
+      return
+    }
+
+    try {
+      const response = await axios.get(`${backendUrl}/user`, buildAuthHeaders(token.value))
+      user.value = response.data
+      isAuthenticated.value = true
+    } catch (error) {
+      clearSession()
+      errorMessage.value = getErrorMessage(error)
+    }
+  }
+
+  async function logout() {
+    clearError()
+
+    if (!token.value) {
+      clearSession()
+      return
+    }
+
+    try {
+      await axios.post(`${backendUrl}/logout`, null, buildAuthHeaders(token.value))
+    } catch (error) {
+      errorMessage.value = getErrorMessage(error)
+    } finally {
+      clearSession()
+    }
+  }
+
+  return {
+    clearError,
+    login,
+    getUser,
+    logout,
+  }
+}
+
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref(null)
+  const token = ref(localStorage.getItem('token') || null)
+  const isAuthenticated = ref(false)
+  const errorMessage = ref('')
+
+  const actions = createAuthActions({
+    user,
+    token,
+    isAuthenticated,
+    errorMessage,
+  })
+
+  return {
+    user,
+    token,
+    isAuthenticated,
+    errorMessage,
+    ...actions,
+  }
 })

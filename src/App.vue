@@ -1,10 +1,13 @@
-<script>
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import Menubar from 'primevue/menubar'
 import PrimeDialog from 'primevue/dialog'
 import PrimeButton from 'primevue/button'
 
 import AuthLoginForm from '@/components/AuthLoginForm.vue'
 import { useAuthStore } from '@/stores/authStore'
+import { provideLoginModalChannel } from '@/composables/useLoginModalChannel'
 
 const MENUBAR_PT = Object.freeze({
   rootList: {
@@ -24,79 +27,56 @@ const LOGIN_DIALOG_PT = Object.freeze({
   },
 })
 
-export default {
-  components: {
-    Menubar,
-    PrimeDialog,
-    PrimeButton,
-    AuthLoginForm,
+const authStore = useAuthStore()
+const { isAuthenticated, user, token } = storeToRefs(authStore)
+const showLoginModal = ref(false)
+const menubarPt = MENUBAR_PT
+const loginDialogPt = LOGIN_DIALOG_PT
+const menuItems = [
+  {
+    label: 'Главная',
+    icon: 'pi pi-home',
+    route: '/',
   },
-  data() {
-    return {
-      authStore: useAuthStore(),
-      showLoginModal: false,
-      menubarPt: MENUBAR_PT,
-      loginDialogPt: LOGIN_DIALOG_PT,
-      menuItems: [
-        {
-          label: 'Главная',
-          icon: 'pi pi-home',
-          route: '/',
-        },
-        {
-          label: 'Регионы',
-          icon: 'pi pi-map-marker',
-          route: '/region',
-        },
-        {
-          label: 'Участки',
-          icon: 'pi pi-building-columns',
-          route: '/pollingstation',
-        },
-      ],
-    }
+  {
+    label: 'Регионы',
+    icon: 'pi pi-map-marker',
+    route: '/region',
   },
-  computed: {
-    isAuthenticated() {
-      return this.authStore.isAuthenticated
-    },
-    user() {
-      return this.authStore.user
-    },
-    accountTitle() {
-      return this.user?.name || 'Аккаунт'
-    },
+  {
+    label: 'Участки',
+    icon: 'pi pi-building-columns',
+    route: '/pollingstation',
   },
-  methods: {
-    async logout() {
-      await this.authStore.logout()
-    },
-    openLoginModal() {
-      this.authStore.clearError()
-      this.showLoginModal = true
-    },
-    onLoginSuccess() {
-      this.showLoginModal = false
-      this.authStore.clearError()
-    },
-    onLoginModalHide() {
-      this.authStore.clearError()
-    },
-    handleExternalLoginOpen() {
-      this.openLoginModal()
-    },
-  },
-  mounted() {
-    if (this.authStore.token) {
-      this.authStore.getUser()
-    }
+]
 
-    window.addEventListener('open-login-modal', this.handleExternalLoginOpen)
-  },
-  beforeUnmount() {
-    window.removeEventListener('open-login-modal', this.handleExternalLoginOpen)
-  },
+const accountTitle = computed(() => user.value?.name || 'Аккаунт')
+
+async function logout() {
+  await authStore.logout()
 }
+
+function openLoginModal() {
+  authStore.clearError()
+  showLoginModal.value = true
+}
+
+function onLoginSuccess() {
+  showLoginModal.value = false
+  authStore.clearError()
+}
+
+function onLoginModalHide() {
+  authStore.clearError()
+}
+
+provideLoginModalChannel(openLoginModal)
+
+onMounted(() => {
+  if (token.value) {
+    authStore.getUser()
+  }
+})
 </script>
 
 <template>
