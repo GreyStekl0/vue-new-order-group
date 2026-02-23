@@ -13,6 +13,26 @@
         />
       </div>
 
+      <div class="mb-4 mt-4">
+        <label
+          for="region-image"
+          class="block text-md font-medium text-gray-500 border border-gray-300 rounded-md p-2"
+        >
+          <span :class="fileIconClass" class="mx-3"></span>{{ fileLabel }}
+        </label>
+
+        <input
+          :key="fileInputKey"
+          id="region-image"
+          type="file"
+          hidden
+          name="image"
+          required
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+          @change="onImageChange"
+        >
+      </div>
+
       <div class="flex flex-col mt-6">
         <Button
           type="submit"
@@ -39,8 +59,21 @@ const dataStore = useDataStore()
 const toast = useToast()
 
 const regionName = ref('')
+const regionImage = ref(null)
+const fileInputKey = ref(0)
+const fileLabel = ref('Выбрать изображение')
+
 const trimmedRegionName = computed(() => String(regionName.value).trim())
-const isSubmitDisabled = computed(() => dataStore.loading || !trimmedRegionName.value)
+const fileIconClass = computed(() => (regionImage.value ? 'pi pi-file' : 'pi pi-upload'))
+const isSubmitDisabled = computed(
+  () => dataStore.loading || !trimmedRegionName.value || !regionImage.value
+)
+
+function onImageChange(event) {
+  const file = event.target.files?.[0] ?? null
+  regionImage.value = file
+  fileLabel.value = file ? file.name : 'Выбрать изображение'
+}
 
 async function createRegion() {
   if (isSubmitDisabled.value) {
@@ -48,7 +81,11 @@ async function createRegion() {
   }
 
   try {
-    await dataStore.createResource('regions', { name: trimmedRegionName.value }, { refresh: true })
+    const formData = new FormData()
+    formData.append('name', trimmedRegionName.value)
+    formData.append('image', regionImage.value)
+
+    await dataStore.createResource('regions', formData, { refresh: true })
 
     toast.add({
       severity: 'success',
@@ -58,6 +95,9 @@ async function createRegion() {
     })
 
     regionName.value = ''
+    regionImage.value = null
+    fileLabel.value = 'Выбрать изображение'
+    fileInputKey.value += 1
   } catch (error) {
     toast.add({
       severity: 'error',

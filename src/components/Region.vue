@@ -13,6 +13,17 @@
       responsive-layout="scroll"
       :first="offset"
     >
+      <template #header>
+        <div class="region-table__header">
+          <Button
+            label="Добавить регион"
+            icon="pi pi-plus"
+            size="small"
+            @click="goToCreateRegion"
+          />
+        </div>
+      </template>
+
       <Column field="id" header="№" />
       <Column field="name" header="Наименование региона" />
     </DataTable>
@@ -22,19 +33,31 @@
 <script setup>
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import Button from 'primevue/button'
+import { useRouter } from 'vue-router'
 import { useResourceTable } from '@/composables/useResourceTable'
 
 defineOptions({
   name: 'RegionTable',
 })
 
+const router = useRouter()
 const { dataStore, perPage, offset, rowsPerPageOptions, rows, totalRecords, onPageChange } =
   useResourceTable('regions')
+
+function goToCreateRegion() {
+  router.push('/createRegion')
+}
 </script>
 
 <style scoped>
 .region-table {
   margin-top: var(--nog-space-region-grid-offset);
+}
+
+.region-table__header {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .region-table :deep(.p-datatable) {
@@ -47,6 +70,13 @@ const { dataStore, perPage, offset, rowsPerPageOptions, rows, totalRecords, onPa
 
 .region-table :deep(.p-datatable-table-container) {
   background: var(--nog-surface);
+}
+
+.region-table :deep(.p-datatable-header) {
+  border: 0;
+  border-bottom: 1px solid var(--nog-border);
+  background: var(--nog-surface);
+  padding: 0.8rem 1rem;
 }
 
 .region-table :deep(.p-datatable-thead > tr > th) {
