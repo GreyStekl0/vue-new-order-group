@@ -1,50 +1,52 @@
 <template>
-  <div class="flex justify-center">
-    <form class="w-1/2 p-6" @submit.prevent="createRegion">
-      <h2 class="text-2xl mb-4 text-center" style="color: dimgrey">
-        Добавление региона
-      </h2>
+  <section>
+    <div class="flex justify-center">
+      <form class="w-1/2 p-6" @submit.prevent="createRegion">
+        <h2 class="text-2xl mb-4 text-center" style="color: dimgrey">
+          Добавление региона
+        </h2>
 
-      <div class="flex flex-col">
-        <InputText
-          v-model="regionName"
-          type="text"
-          placeholder="Введите наименование региона"
-        />
-      </div>
+        <div class="flex flex-col">
+          <InputText
+            v-model="regionName"
+            type="text"
+            placeholder="Введите наименование региона"
+          />
+        </div>
 
-      <div class="mb-4 mt-4">
-        <label
-          for="region-image"
-          class="block text-md font-medium text-gray-500 border border-gray-300 rounded-md p-2"
-        >
-          <span :class="fileIconClass" class="mx-3"></span>{{ fileLabel }}
-        </label>
+        <div class="mb-4 mt-4">
+          <label
+            for="region-image"
+            class="block text-md font-medium text-gray-500 border border-gray-300 rounded-md p-2"
+          >
+            <span :class="fileIconClass" class="mx-3"></span>{{ fileLabel }}
+          </label>
 
-        <input
-          :key="fileInputKey"
-          id="region-image"
-          type="file"
-          hidden
-          name="image"
-          required
-          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-          @change="onImageChange"
-        >
-      </div>
+          <input
+            :key="fileInputKey"
+            id="region-image"
+            type="file"
+            hidden
+            name="image"
+            required
+            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            @change="onImageChange"
+          >
+        </div>
 
-      <div class="flex flex-col mt-6">
-        <Button
-          type="submit"
-          label="Создать"
-          :disabled="isSubmitDisabled"
-          :loading="dataStore.loading"
-        />
-      </div>
-    </form>
-  </div>
+        <div class="flex flex-col mt-6">
+          <Button
+            type="submit"
+            label="Создать"
+            :disabled="isSubmitDisabled"
+            :loading="dataStore.loading"
+          />
+        </div>
+      </form>
+    </div>
 
-  <Toast position="bottom-right" />
+    <Toast position="bottom-right" />
+  </section>
 </template>
 
 <script setup>

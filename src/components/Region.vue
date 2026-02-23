@@ -13,17 +13,6 @@
       responsive-layout="scroll"
       :first="offset"
     >
-      <template #paginatorstart>
-        <Button
-          class="region-table__paginator-placeholder"
-          label="Добавить регион"
-          icon="pi pi-plus"
-          size="small"
-          aria-hidden="true"
-          tabindex="-1"
-        />
-      </template>
-
       <template #paginatorend>
         <Button
           label="Добавить регион"
@@ -34,12 +23,34 @@
       </template>
 
       <Column field="id" header="№" />
+      <Column
+        header="Изображение"
+        headerClass="region-table__image-column-header"
+        bodyClass="region-table__image-column-body"
+      >
+        <template #body="{ data }">
+          <div class="region-table__image-cell">
+            <img
+              v-if="hasRegionImage(data)"
+              :src="getRegionImageUrlByRow(data)"
+              :alt="getRegionImageAlt(data)"
+              class="region-table__image"
+              loading="lazy"
+              @error="onImageError(data)"
+            >
+            <span v-else class="region-table__image-fallback" aria-hidden="true">
+              <i class="pi pi-image" />
+            </span>
+          </div>
+        </template>
+      </Column>
       <Column field="name" header="Наименование региона" />
     </DataTable>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
@@ -53,9 +64,71 @@ defineOptions({
 const router = useRouter()
 const { dataStore, perPage, offset, rowsPerPageOptions, rows, totalRecords, onPageChange } =
   useResourceTable('regions')
+const failedImageKeys = ref(new Set())
+
+const backendOrigin = (() => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
+  if (!backendUrl) {
+    return ''
+  }
+
+  try {
+    return new URL(backendUrl).origin
+  } catch {
+    return ''
+  }
+})()
 
 function goToCreateRegion() {
   router.push('/createRegion')
+}
+
+function getImageKey(region) {
+  return String(region?.id ?? region?.['picture_url'] ?? '').trim()
+}
+
+function hasRegionImage(region) {
+  const imagePath = String(region?.['picture_url'] ?? '').trim()
+  if (!imagePath) {
+    return false
+  }
+
+  const key = getImageKey(region)
+  return key ? !failedImageKeys.value.has(key) : true
+}
+
+function onImageError(region) {
+  const key = getImageKey(region)
+  if (!key || failedImageKeys.value.has(key)) {
+    return
+  }
+
+  const nextFailedImageKeys = new Set(failedImageKeys.value)
+  nextFailedImageKeys.add(key)
+  failedImageKeys.value = nextFailedImageKeys
+}
+
+function getRegionImageUrl(imagePath) {
+  const rawPath = String(imagePath ?? '').trim()
+  if (!rawPath) {
+    return ''
+  }
+
+  if (/^https?:\/\//i.test(rawPath) || rawPath.startsWith('data:')) {
+    return rawPath
+  }
+
+  const normalizedPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`
+  return backendOrigin ? `${backendOrigin}${normalizedPath}` : normalizedPath
+}
+
+function getRegionImageUrlByRow(region) {
+  return getRegionImageUrl(region?.['picture_url'])
+}
+
+function getRegionImageAlt(region) {
+  const regionName = String(region?.name ?? '').trim()
+  return regionName ? `Изображение региона ${regionName}` : 'Изображение региона'
 }
 </script>
 
@@ -112,16 +185,52 @@ function goToCreateRegion() {
   color: var(--nog-text-strong);
 }
 
+.region-table :deep(.region-table__image-column-header),
+.region-table :deep(.region-table__image-column-body) {
+  width: 7rem;
+  text-align: center;
+}
+
+.region-table__image-cell {
+  display: flex;
+  justify-content: center;
+}
+
+.region-table__image,
+.region-table__image-fallback {
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 0.65rem;
+}
+
+.region-table__image {
+  display: block;
+  object-fit: cover;
+  border: 1px solid var(--nog-border-soft);
+  background: var(--nog-surface-soft);
+}
+
+.region-table__image-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--nog-border-soft);
+  background: var(--nog-accent-surface);
+  color: var(--nog-text-subtle);
+}
+
 .region-table :deep(.p-paginator) {
   border: 0;
   border-top: 1px solid var(--nog-border);
   background: var(--nog-surface-soft);
   padding: 0.6rem 0.8rem;
+  position: relative;
+  justify-content: center;
 }
 
-.region-table :deep(.region-table__paginator-placeholder) {
-  visibility: hidden;
-  pointer-events: none;
+.region-table :deep(.p-paginator-content-end) {
+  position: absolute;
+  right: 0.8rem;
 }
 
 .region-table :deep(.p-paginator .p-paginator-page),
