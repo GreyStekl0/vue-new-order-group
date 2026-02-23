@@ -5,18 +5,18 @@ import { useAuthStore } from '@/stores/authStore'
 import { useDataStore } from '@/stores/dataStore'
 
 const DEFAULT_PAGE = 1
-const DEFAULT_PERPAGE = 5
+const DEFAULT_PER_PAGE = 5
 
 export function useAuthResourcePage(resourceName, options = {}) {
   const page = options.page ?? DEFAULT_PAGE
-  const perpage = options.perpage ?? DEFAULT_PERPAGE
+  const perPage = options.perPage ?? options.perpage ?? DEFAULT_PER_PAGE
 
   const authStore = useAuthStore()
   const dataStore = useDataStore()
   const { isAuthenticated, token } = storeToRefs(authStore)
 
   const isLoading = ref(false)
-  const hasResources = computed(() => dataStore.get_resource_list(resourceName).length > 0)
+  const hasResources = computed(() => dataStore.getResourceList(resourceName).length > 0)
   const isAuthPending = computed(() => Boolean(token.value) && !isAuthenticated.value)
   const showGuestState = computed(() => !isAuthPending.value && !isAuthenticated.value)
   const showResourceState = computed(() => isAuthenticated.value && hasResources.value)
@@ -28,7 +28,7 @@ export function useAuthResourcePage(resourceName, options = {}) {
     isLoading.value = true
 
     try {
-      await dataStore.get_resource(resourceName, page, perpage)
+      await dataStore.getResource(resourceName, page, perPage)
     } finally {
       isLoading.value = false
     }

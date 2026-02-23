@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Home.vue'
 import Region from './views/Region.vue'
 import PollingStation from './views/PollingStation.vue'
+import CreateRegion from '@/components/CreateRegion.vue'
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     path: '/region',
     name: 'Region',
     component: Region,
+  },
+  {
+    path: '/createRegion',
+    name: 'CreateRegion',
+    component: CreateRegion,
   },
   {
     path: '/pollingstation',

@@ -14,23 +14,23 @@ export function useResourceTable(
 ) {
   const dataStore = useDataStore()
 
-  const perpage = ref(initialRows)
+  const perPage = ref(initialRows)
   const offset = ref(0)
 
-  const rows = computed(() => dataStore.get_resource_list(resourceName))
+  const rows = computed(() => dataStore.getResourceList(resourceName))
   const totalRecords = computed(() => dataStore.pagination?.[resourceName]?.total || 0)
 
   function onPageChange(event) {
     offset.value = event.first
-    perpage.value = event.rows
+    perPage.value = event.rows
 
-    const page = (event.page ?? offset.value / perpage.value) + 1
-    void dataStore.get_resource(resourceName, page, perpage.value)
+    const page = (event.page ?? offset.value / perPage.value) + 1
+    void dataStore.getResource(resourceName, page, perPage.value)
   }
 
   return {
     dataStore,
-    perpage,
+    perPage,
     offset,
     rowsPerPageOptions,
     rows,
