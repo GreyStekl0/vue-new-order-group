@@ -6,7 +6,7 @@
       :lazy="true"
       :loading="dataStore.loading"
       :paginator="true"
-      :rows="perpage"
+      :rows="perPage"
       :rowsPerPageOptions="rowsPerPageOptions"
       :totalRecords="totalRecords"
       @page="onPageChange"
@@ -28,7 +28,7 @@ defineOptions({
   name: 'RegionTable',
 })
 
-const { dataStore, perpage, offset, rowsPerPageOptions, rows, totalRecords, onPageChange } =
+const { dataStore, perPage, offset, rowsPerPageOptions, rows, totalRecords, onPageChange } =
   useResourceTable('regions')
 </script>
 

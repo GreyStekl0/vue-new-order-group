@@ -8,7 +8,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL
 const DEFAULT_PAGE = 1
 const DEFAULT_PERPAGE = 5
 
-const resources = {
+const resourceEndpoints = {
   candidates: '/candidates',
   regions: '/regions',
   pollingStations: '/polling-stations',
@@ -17,23 +17,26 @@ const resources = {
 function createPaginationState() {
   return {
     page: DEFAULT_PAGE,
-    perpage: DEFAULT_PERPAGE,
+    perPage: DEFAULT_PERPAGE,
     total: 0,
-    last_page: DEFAULT_PAGE,
+    lastPage: DEFAULT_PAGE,
   }
 }
 
 function toPagination(payload) {
   return {
     page: payload['current_page'],
-    perpage: payload['per_page'],
+    perPage: payload['per_page'],
     total: payload['total'],
-    last_page: payload['last_page'],
+    lastPage: payload['last_page'],
   }
 }
 
 export const useDataStore = defineStore('data', () => {
   const loading = ref(false)
+  const resources = reactive({})
+  const errorCode = ref(null)
+  const errorMessage = ref('')
   const lists = reactive({
     candidates: [],
     regions: [],
@@ -45,12 +48,12 @@ export const useDataStore = defineStore('data', () => {
     pollingStations: createPaginationState(),
   })
 
-  function get_resource_list(resourceName) {
+  function getResourceList(resourceName) {
     return lists[resourceName] ?? []
   }
 
-  async function get_resource(resourceName, page = DEFAULT_PAGE, perpage = DEFAULT_PERPAGE) {
-    const endpoint = resources[resourceName]
+  async function getResource(resourceName, page = DEFAULT_PAGE, perPage = DEFAULT_PERPAGE) {
+    const endpoint = resourceEndpoints[resourceName]
     if (!endpoint) {
       return
     }
@@ -65,7 +68,7 @@ export const useDataStore = defineStore('data', () => {
         },
         params: {
           page,
-          perpage,
+          perpage: perPage,
         },
       })
 
@@ -78,10 +81,51 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
+  async function createResource(
+    resourceName,
+    payload,
+    { refresh = true, page = DEFAULT_PAGE, perPage = DEFAULT_PERPAGE } = {}
+  ) {
+    const endpoint = resourceEndpoints[resourceName]
+    if (!endpoint) {
+      return null
+    }
+
+    const authStore = useAuthStore()
+    loading.value = true
+
+    try {
+      const response = await axios.post(`${backendUrl}${endpoint}`, payload, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      })
+
+      if (refresh) {
+        await getResource(resourceName, page, perPage)
+      }
+
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message ?? error.message
+        throw new Error(message)
+      }
+
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading,
+    resources,
+    errorCode,
+    errorMessage,
     pagination,
-    get_resource,
-    get_resource_list,
+    createResource,
+    getResource,
+    getResourceList,
   }
 })
