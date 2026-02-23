@@ -13,15 +13,24 @@
       responsive-layout="scroll"
       :first="offset"
     >
-      <template #header>
-        <div class="region-table__header">
-          <Button
-            label="Добавить регион"
-            icon="pi pi-plus"
-            size="small"
-            @click="goToCreateRegion"
-          />
-        </div>
+      <template #paginatorstart>
+        <Button
+          class="region-table__paginator-placeholder"
+          label="Добавить регион"
+          icon="pi pi-plus"
+          size="small"
+          aria-hidden="true"
+          tabindex="-1"
+        />
+      </template>
+
+      <template #paginatorend>
+        <Button
+          label="Добавить регион"
+          icon="pi pi-plus"
+          size="small"
+          @click="goToCreateRegion"
+        />
       </template>
 
       <Column field="id" header="№" />
@@ -55,11 +64,6 @@ function goToCreateRegion() {
   margin-top: var(--nog-space-region-grid-offset);
 }
 
-.region-table__header {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .region-table :deep(.p-datatable) {
   border: 1px solid var(--nog-border);
   border-radius: var(--nog-radius-surface);
@@ -70,13 +74,6 @@ function goToCreateRegion() {
 
 .region-table :deep(.p-datatable-table-container) {
   background: var(--nog-surface);
-}
-
-.region-table :deep(.p-datatable-header) {
-  border: 0;
-  border-bottom: 1px solid var(--nog-border);
-  background: var(--nog-surface);
-  padding: 0.8rem 1rem;
 }
 
 .region-table :deep(.p-datatable-thead > tr > th) {
@@ -120,6 +117,11 @@ function goToCreateRegion() {
   border-top: 1px solid var(--nog-border);
   background: var(--nog-surface-soft);
   padding: 0.6rem 0.8rem;
+}
+
+.region-table :deep(.region-table__paginator-placeholder) {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .region-table :deep(.p-paginator .p-paginator-page),
