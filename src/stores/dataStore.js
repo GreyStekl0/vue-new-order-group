@@ -34,8 +34,6 @@ function toPagination(payload) {
 
 export const useDataStore = defineStore('data', () => {
   const loading = ref(false)
-  const resources = reactive({})
-  const errorCode = ref(null)
   const errorMessage = ref('')
   const lists = reactive({
     candidates: [],
@@ -59,6 +57,7 @@ export const useDataStore = defineStore('data', () => {
     }
 
     const authStore = useAuthStore()
+    errorMessage.value = ''
     loading.value = true
 
     try {
@@ -75,7 +74,12 @@ export const useDataStore = defineStore('data', () => {
       lists[resourceName] = response.data.data
       pagination[resourceName] = toPagination(response.data)
     } catch (error) {
-      console.log(error)
+      if (axios.isAxiosError(error)) {
+        errorMessage.value = error.response?.data?.message ?? error.message
+      } else {
+        errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить ресурсы'
+      }
+      console.error(error)
     } finally {
       loading.value = false
     }
@@ -120,8 +124,6 @@ export const useDataStore = defineStore('data', () => {
 
   return {
     loading,
-    resources,
-    errorCode,
     errorMessage,
     pagination,
     createResource,

@@ -2,7 +2,7 @@
   <section>
     <div class="flex justify-center">
       <form class="w-1/2 p-6" @submit.prevent="createRegion">
-        <h2 class="text-2xl mb-4 text-center" style="color: dimgrey">
+        <h2 class="text-2xl mb-4 text-center text-gray-600">
           Добавление региона
         </h2>
 
