@@ -14,12 +14,7 @@
       :first="offset"
     >
       <template #paginatorend>
-        <Button
-          label="Добавить регион"
-          icon="pi pi-plus"
-          size="small"
-          @click="goToCreateRegion"
-        />
+        <Button label="Добавить регион" icon="pi pi-plus" size="small" @click="goToCreateRegion" />
       </template>
 
       <Column field="id" header="№" />
@@ -37,7 +32,7 @@
               class="region-table__image"
               loading="lazy"
               @error="onImageError(data)"
-            >
+            />
             <span v-else class="region-table__image-fallback" aria-hidden="true">
               <i class="pi pi-image" />
             </span>
@@ -65,19 +60,6 @@ const router = useRouter()
 const { dataStore, perPage, offset, rowsPerPageOptions, rows, totalRecords, onPageChange } =
   useResourceTable('regions')
 const failedImageKeys = ref(new Set())
-
-const backendOrigin = (() => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-  if (!backendUrl) {
-    return ''
-  }
-
-  try {
-    return new URL(backendUrl).origin
-  } catch {
-    return ''
-  }
-})()
 
 function goToCreateRegion() {
   router.push('/createRegion')
@@ -109,17 +91,7 @@ function onImageError(region) {
 }
 
 function getRegionImageUrl(imagePath) {
-  const rawPath = String(imagePath ?? '').trim()
-  if (!rawPath) {
-    return ''
-  }
-
-  if (/^https?:\/\//i.test(rawPath) || rawPath.startsWith('data:')) {
-    return rawPath
-  }
-
-  const normalizedPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`
-  return backendOrigin ? `${backendOrigin}${normalizedPath}` : normalizedPath
+  return String(imagePath ?? '').trim()
 }
 
 function getRegionImageUrlByRow(region) {
