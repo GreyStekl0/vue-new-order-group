@@ -28,7 +28,6 @@
             <img
               v-if="hasRegionImage(data)"
               :src="getRegionImageUrlByRow(data)"
-              :alt="getRegionImageAlt(data)"
               class="region-table__image"
               loading="lazy"
               @error="onImageError(data)"
@@ -96,11 +95,6 @@ function getRegionImageUrl(imagePath) {
 
 function getRegionImageUrlByRow(region) {
   return getRegionImageUrl(region?.['picture_url'])
-}
-
-function getRegionImageAlt(region) {
-  const regionName = String(region?.name ?? '').trim()
-  return regionName ? `Изображение региона ${regionName}` : 'Изображение региона'
 }
 </script>
 
